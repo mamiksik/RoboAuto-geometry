@@ -3,4 +3,4 @@ project(RoboAuto_geometry)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(RoboAuto_geometry main.cpp)
+add_executable(RoboAuto_geometry main.cpp Lib/GeometricEntity.cpp Lib/GeometricEntity.h Lib/Point.cpp Lib/Point.h)
