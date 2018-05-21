@@ -6,7 +6,7 @@
 #include "Point.h"
 
 
-Point::Point( int _x, int _y, int _z ): coordinates{_x, _y, _z}
+Point::Point( double _x, double _y, double _z ): coordinates{_x, _y, _z}
 {
 }
 

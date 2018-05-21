@@ -5,16 +5,11 @@
 
 class GeometricEntity
 {
-//private:
-//	GeometricEntity();
-
 public:
-	enum axe {
+	enum axe
+	{
 		x = 0,
 		y,
 		z
 	};
-
-//	virtual double distance() = 0;
-
 };

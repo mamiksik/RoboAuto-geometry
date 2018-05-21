@@ -9,10 +9,10 @@
 class Point : GeometricEntity
 {
 public:
-	Point(int _x, int _y, int _z);
+	Point( double _x, double _y, double _z );
 
-	double distance(Point);
+	double distance( Point );
 
 	// Make it private?
-	int coordinates[3];
+	double coordinates[3];
 };
