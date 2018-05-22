@@ -4,30 +4,75 @@
 
 #pragma once
 
-#include "GeometricEntity.h"
-#include "Point.h"
+#include <cmath>
 
-class Vector : GeometricEntity
+enum Axe {
+	x = 0,
+	y,
+	z
+};
+
+class Vector
 {
 public:
-	Vector( Point _point );
+	Vector( double _x, double _y): x(_x), y(_y){};
 
-	double length( );
+	double length( )
+	{
+		return sqrt( pow( x, 2 ) +
+		             pow( y, 2 )
+		);
+	}
 
-	bool operator==( Vector vector );
 
-	bool operator!=( Vector vector );
+	Vector rotate(float angle, Vector center)
+	{
+		return Vector( 0, 0 );
+	}
 
-	Vector operator+( Vector vector );
 
-	double operator+( int i );
+	bool operator==( Vector vector )
+	{
+		return x == vector.x && y == vector.y;
+	}
 
-	Vector operator-( Vector vector );
 
-	double operator-( int i );
+	bool operator!=( Vector vector )
+	{
+		return x != vector.x || y != vector.y;
+	}
 
-	double operator*( Vector vector );
 
-	// Make it private?
-	Point point;
+	Vector operator+( Vector vector )
+	{
+		return Vector( x + vector.x, y + vector.y);
+	}
+
+
+	double operator+( int i )
+	{
+		return length() + i;
+	}
+
+
+	Vector operator-( Vector vector )
+	{
+		return Vector( x - vector.x, y - vector.y);
+	}
+
+
+	double operator-( int i )
+	{
+		return length() - i;
+	}
+
+
+	double operator*( Vector vector )
+	{
+		return x * vector.y + y * vector.y;
+	}
+
+
+	const double x;
+	const double y;
 };

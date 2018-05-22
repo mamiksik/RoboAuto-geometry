@@ -1,31 +1,57 @@
 //
-// Created by Martin Miksik on 21/05/2018.
+// Created by Martin Miksik on 22/05/2018.
 //
 
 #pragma once
 
-#include "GeometricEntity.h"
-#include "Point.h"
+#include <stdexcept>
 #include "Vector.h"
 
-class Line : GeometricEntity
+class Line
 {
 public:
-//	Line( Point _point, Vector _vector );
-	Line( Point _pointA,  Point _pointB);
+	Line( Vector A, Vector B ) : vectorA( A ),
+	                             vectorB( B ),
+	                             a( vectorA.y - vectorB.y ),
+	                             b( vectorB.x - vectorA.x ),
+	                             c( -b * vectorA.y + -a * vectorA.x ) { };
 
-	double distance( Point point );
 
-	bool isParaller( Line line );
+	double distance( Vector vector )
+	{
+		return abs( a * vector.x + b * vector.y + c ) / sqrt( pow( a, 2 ) + pow( b, 2 ) );
+	};
 
-	bool isPerpendicular( Line line);
 
-	Point intersection( Line line);
+	bool isParaller( Line line )
+	{
+		return ( -a / b ) == ( -line.a / b );
+	}
 
-	Point pointA;
-	Point pointB;
 
-	double a;
-	double b;
-	double c;
+	bool isPerpendicular( Line line )
+	{
+		return ( -a / b ) * ( -line.a / b ) == -1;
+	}
+
+
+	Vector intersection( Line line )
+	{
+		if ( isParaller( line ) ) {
+			throw std::invalid_argument( "Line can not be perpendicular." );
+		}
+
+		double x = ( b * line.c - line.b * c ) / ( a * line.b - line.a - b );
+		double y = ( line.a * c - a * line.c ) / ( a * line.b - line.a - b );
+
+		return Vector( x, y );
+	}
+
+
+	Vector const vectorA;
+	Vector const vectorB;
+
+	double const a;
+	double const b;
+	double const c;
 };

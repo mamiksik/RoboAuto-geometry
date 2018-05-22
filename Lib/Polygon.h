@@ -6,17 +6,17 @@
 
 #include <vector>
 #include <array>
-#include "Point.h"
+
 #include "Line.h"
 
 template < int size >
 class Polygon
 {
 public:
-	Polygon( std::array < Point, size > & _points ) : points{ _points } { }
+	Polygon( std::array < Vector, size > & _points ) : points{ _points } { }
 
 
-	double distance( Point point )
+	double distance( Vector point )
 	{
 		Line line = Line( points[ points.size() - 1 ], points[ 0 ] );
 
@@ -37,19 +37,19 @@ public:
 	};
 
 
-	bool isWithin( Point point )
+	bool isInside( Vector point )
 	{
-		double x = point.coordinates[ Point::axe::x ];
-		double y = point.coordinates[ Point::axe::y ];
+		double x = point.x;
+		double y = point.y;
 
 		bool inside = false;
 		for ( int i = 0; i < points.size() - 1; ++i ) {
 
-			double xi = points[ i ].coordinates[ Point::axe::x ];
-			double yi = points[ i ].coordinates[ Point::axe::y ];
+			double xi = points[ i ].x;
+			double yi = points[ i ].y;
 
-			double xj = points[ i + 1 ].coordinates[ Point::axe::x ];
-			double yj = points[ i + 1 ].coordinates[ Point::axe::y ];
+			double xj = points[ i + 1 ].x;
+			double yj = points[ i + 1 ].y;
 
 
 			bool intersect = ( ( yi > y ) != ( yj > y ) ) && ( x < ( xj - xi ) * ( y - yi ) / ( yj - yi ) + xi );
@@ -61,9 +61,9 @@ public:
 	}
 
 
-	Polygon < size > rotate( float angle, Point point )
+	Polygon < size > rotate( float angle, Vector point )
 	{
-		std::array < Point, size > rotatedPoints;
+		std::array < Vector, size > rotatedPoints;
 		for ( int i = 0; i < points.size(); ++i ) {
 			rotatedPoints[i] = points[i].rotate(angle, point);
 		}
@@ -73,5 +73,5 @@ public:
 
 
 private:
-	std::array < Point, size > points;
+	std::array < Vector, size > points;
 };

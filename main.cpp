@@ -1,9 +1,11 @@
 #include <iostream>
-#include "Lib/Point.h"
 #include "Lib/Vector.h"
 #include "Lib/Line.h"
 #include "Lib/Polygon.h"
 
+#include "modules/matplotlib/matplotlibcpp.h"
+
+namespace plt = matplotlibcpp;
 
 int main( )
 {
@@ -35,12 +37,12 @@ int main( )
 
 
 	Line p = Line( A, B );
-	Line x = Line( X, B );
+	Line o = Line( X, B );
 
 	Line q = Line( Z, Q );
 
 	// Line Test
-	std::cout << p.isPerpendicular(x) << " : Should be true" << std::endl;
+	std::cout << p.isPerpendicular(o) << " : Should be true" << std::endl;
 	std::cout << p.isParaller(q) << " : Should be true" << std::endl;
 
 	std::cout << p.distance( C ) << " : Distance from p to A. Should be 0" << std::endl;
@@ -52,10 +54,19 @@ int main( )
 	Point N{ 1, 2 };
 
 //	Polygon polygon = {K, L, M, N};
-	std::array<Point, 4> points = {K, L, M, N};
-	Polygon polygon<4> = {points};
+//	std::vector<double> t(1000);
+//	std::vector<double> x(t.size());
 
-	std::cout << polygon.distance(C) << std::endl;
+//	std::vector<double> x(1),y(1);
+//	x.at(0) = (A.coordinates[Point::axe::x]);
+//	y.at(0) = (A.coordinates[Point::axe::y]);
+
+	plt::scatter<int>(2, 2);
+
+	plt::xkcd();
+	plt::legend();
+	plt::grid(true);
+	plt::save("xkcd.png");
 
 
 }
