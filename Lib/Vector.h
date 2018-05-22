@@ -10,7 +10,7 @@
 class Vector : GeometricEntity
 {
 public:
-	Vector(Point _point);
+	Vector( Point _point );
 
 	double length( );
 
@@ -19,12 +19,14 @@ public:
 	bool operator!=( Vector vector );
 
 	Vector operator+( Vector vector );
+
 	double operator+( int i );
 
 	Vector operator-( Vector vector );
-	double operator-( int i  );
 
-	Vector operator*( Vector vector );
+	double operator-( int i );
+
+	double operator*( Vector vector );
 
 	// Make it private?
 	Point point;

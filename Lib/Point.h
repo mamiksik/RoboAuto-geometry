@@ -6,13 +6,15 @@
 
 #include "GeometricEntity.h"
 
-class Point : GeometricEntity
+class Point : public GeometricEntity
 {
 public:
-	Point( double _x, double _y, double _z );
+	Point( double _x, double _y);
 
 	double distance( Point );
 
+	Point rotate(float angle, Point center);
+
 	// Make it private?
-	double coordinates[3];
+	double coordinates[2];
 };
