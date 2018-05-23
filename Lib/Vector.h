@@ -3,8 +3,11 @@
 //
 
 #pragma once
-
+#include <QtCharts>
 #include <cmath>
+
+
+using namespace QtCharts;
 
 enum Axe {
 	x = 0,
@@ -24,10 +27,41 @@ public:
 		);
 	}
 
+	double distance( Vector vector )
+	{
+		return sqrt(pow(vector.x - x, 2) + pow(vector.y - y, 2));
+	}
+
+	QScatterSeries* draw(std::string name = "") {
+		auto *point = new QScatterSeries();
+
+		point->setMarkerShape(QScatterSeries::MarkerShapeCircle);
+		point->setMarkerSize(10.0);
+
+		point->append(x, y);
+		point->setName(name.c_str());
+
+		return point;
+	}
+
 
 	Vector rotate(float angle, Vector center)
 	{
-		return Vector( 0, 0 );
+		float s = sin(angle * M_PI / 180);
+		float c = cos(angle * M_PI/ 180);
+
+		double nx = x - center.x;
+		double ny = y - center.y;
+
+		// rotate point
+		float xnew = x * c - y * s;
+		float ynew = x * s + y * c;
+
+		// translate point back:
+		nx = xnew + center.x;
+		ny = ynew + center.y;
+
+		return Vector( nx, ny );
 	}
 
 
@@ -73,6 +107,6 @@ public:
 	}
 
 
-	const double x;
-	const double y;
+	double x;
+	double y;
 };
