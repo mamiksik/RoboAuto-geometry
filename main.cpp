@@ -68,10 +68,24 @@ int main( int argc, char *argv[] )
 
 	assert < bool >( o.contains( R ), false );
 	assert < bool >( l.contains( R ), false );
-//	assert < bool >( p.intersection( Line(R, Vector(99999, R.y)) ), false );
+//	assert < bool >( p.intersect( Line(R, Vector(99999, R.y)) ), false );
 
 	Drawer::draw(B, "B");
 	Drawer::draw(F, "F");
+
+	Polygon<4> r = o.rotate(25, B);
+	Polygon<6> p = l.rotate(-90, B);
+
+	Vector Z {0, 5};
+	Drawer::draw(Z, "Z");
+	Drawer::draw(p, "p");
+
+	assert < bool >( r.contains( F ), false );
+	assert < bool >( r.contains( Z ), true );
+
+//	/assert < bool >( p.contains( Z ), true );
+
+	Drawer::draw(r, "r");
 
 //	Drawer::draw(p, "p");
 

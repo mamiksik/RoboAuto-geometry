@@ -52,13 +52,13 @@ public:
 		Line line{ vectors[ vectors.size() - 1 ], vectors[ 0 ] };
 
 		Line ray{ point, Vector( maxX + 1, point.y ) };
-		if ( line.intersection( ray ) ) count++;
+		if ( line.intersect( ray ) ) count++;
 
 		for ( int i = 0; i < vectors.size() - 1; ++i ) {
 
 			line = Line{ vectors[ i ], vectors[ i + 1 ] };
 
-			if ( line.intersection( ray ) ) count++;
+			if ( line.intersect( ray ) ) count++;
 		}
 
 		return count % 2 != 0;
@@ -67,7 +67,7 @@ public:
 
 	Polygon < size > rotate( float angle, Vector point )
 	{
-		auto rotatedPoints = std::array < Vector, size >{ point, point, point, point };
+		std::array < Vector, size > rotatedPoints = vectors;
 		for ( int i = 0; i < vectors.size(); ++i ) {
 			rotatedPoints[ i ] = vectors[ i ].rotate( angle, point );
 		}

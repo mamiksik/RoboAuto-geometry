@@ -13,12 +13,12 @@
 class Line : public Drawable
 {
 public:
-	Line( Vector A, Vector B, bool _infinite = true ) : vectorA( A ),
-	                                                    vectorB( B ),
-	                                                    a( vectorA.y - vectorB.y ),
-	                                                    b( vectorB.x - vectorA.x ),
-	                                                    c( -b * vectorA.y + -a * vectorA.x ),
-	                                                    infinite( _infinite ) { };
+	Line( Vector A, Vector B, bool _infinite = false ) : vectorA( A ),
+	                                                     vectorB( B ),
+	                                                     a( vectorA.y - vectorB.y ),
+	                                                     b( vectorB.x - vectorA.x ),
+	                                                     c( -b * vectorA.y + -a * vectorA.x ),
+	                                                     infinite( _infinite ) { };
 
 
 	double distance( Vector vector )
@@ -27,30 +27,7 @@ public:
 	};
 
 
-	int orientation( Vector v )
-	{
-		float val = ( ( vectorB.y - vectorA.y ) * ( v.x - vectorB.x ) ) -
-		          ( ( vectorB.x - vectorA.x ) * ( v.y - vectorB.y ) );
-
-
-		if ( val == 0 ) return 0; // colinear
-
-		return ( val > 0 ) ? 1 : 2;
-	}
-
-
-	bool onSegment( Vector v )
-	{
-		if ( vectorB.x <= std::max( vectorA.x, v.x ) && vectorB.x >= std::min( vectorA.x, v.x ) &&
-		     vectorB.y <= std::max( vectorA.y, v.y ) && vectorB.y >= std::min( vectorA.y, v.y ) ) {
-			return true;
-		}
-
-		return false;
-	}
-
-
-	/*bool isParaller( Line line )
+	bool isParaller( Line line )
 	{
 		return ( -a / b ) == ( -line.a / b );
 	}
@@ -59,21 +36,11 @@ public:
 	bool isPerpendicular( Line line )
 	{
 		return ( -a / b ) * ( -line.a / b ) == -1;
-	}*/
+	}
 
 
-	bool intersection( Line line )
+	bool intersect( Line line )
 	{
-//		if ( isParaller( line ) ) {
-//			throw std::invalid_argument( "Line can not be paraller." );
-//		}
-
-//		Drawer::draw( line.vectorA, "line A" );
-//		Drawer::draw( line.vectorB, "line B" );
-
-//		Drawer::draw( vectorA, "A" );
-//		Drawer::draw( vectorB, "B" );
-
 		int o1 = orientation( line.vectorA );
 		int o2 = orientation( line.vectorB );
 
@@ -98,14 +65,21 @@ public:
 		// p2, q2 and q1 are colinear and q1 lies on segment p2q2
 		if ( o4 == 0 && onSegment( line.vectorB ) ) intersect = true;
 
-//		if (intersect)
-//			Drawer::draw( line, "intersect" );
-
 		return intersect;
-//		double x = ( b * line.c - line.b * c ) / ( a * line.b - line.a - b );
-//		double y = ( line.a * c - a * line.c ) / ( a * line.b - line.a - b );
+	}
 
-//		return Vector( x, y );
+
+	Vector intersection( Line line )
+	{
+		if ( (!infinite && !intersect( line )) || !isParaller(line) ) {
+			//TODO: Exception
+			throw "Lines do not intersect";
+		}
+
+		double x = ( b * line.c - line.b * c ) / ( a * line.b - line.a - b );
+		double y = ( line.a * c - a * line.c ) / ( a * line.b - line.a - b );
+
+		return Vector( x, y );
 	}
 
 
@@ -118,6 +92,31 @@ public:
 		series->setName( name.c_str() );
 
 		return series;
+	}
+
+
+private:
+
+	int orientation( Vector v )
+	{
+		float val = ( ( vectorB.y - vectorA.y ) * ( v.x - vectorB.x ) ) -
+		            ( ( vectorB.x - vectorA.x ) * ( v.y - vectorB.y ) );
+
+
+		if ( val == 0 ) return 0; // colinear
+
+		return ( val > 0 ) ? 1 : 2;
+	}
+
+
+	bool onSegment( Vector v )
+	{
+		if ( vectorB.x <= std::max( vectorA.x, v.x ) && vectorB.x >= std::min( vectorA.x, v.x ) &&
+		     vectorB.y <= std::max( vectorA.y, v.y ) && vectorB.y >= std::min( vectorA.y, v.y ) ) {
+			return true;
+		}
+
+		return false;
 	}
 
 

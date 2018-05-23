@@ -5,6 +5,7 @@
 #pragma once
 
 #include <cmath>
+#include <sstream>
 #include "Drawable.h"
 
 enum Axe
@@ -22,9 +23,7 @@ public:
 
 	double length( )
 	{
-		return sqrt( pow( x, 2 ) +
-		             pow( y, 2 )
-		);
+		return sqrt( pow( x, 2 ) + pow( y, 2 ) );
 	}
 
 
@@ -34,23 +33,38 @@ public:
 	}
 
 
-	Vector rotate( float angle, Vector center )
+	double alpha( )
 	{
-		float s = sin( angle * M_PI / 180 );
-		float c = cos( angle * M_PI / 180 );
+		return atan2(y, x);
+	}
 
-		double nx = x - center.x;
-		double ny = y - center.y;
 
-		// rotate point
-		float xnew = x * c - y * s;
-		float ynew = x * s + y * c;
+	Vector rotate( float radian )
+	{
+		float s = sin( radian );
+		float c = cos( radian );
 
-		// translate point back:
-		nx = xnew + center.x;
-		ny = ynew + center.y;
+		return Vector(
+				x * c - y * s,
+				x * s + y * c
+		);
+	}
 
-		return Vector( nx, ny );
+
+	Vector rotate( float radian, Vector center )
+	{
+		float s = sin( radian );
+		float c = cos( radian );
+
+		return Vector(
+				( x * c - y * s ) + center.x,
+				( x * s + y * c ) + center.y
+		);
+	}
+
+	//TODO: Check
+	double angleWith(Vector& vector){
+		return abs(alpha() - vector.alpha());
 	}
 
 
@@ -80,13 +94,19 @@ public:
 	}
 
 
+	Vector operator!( )
+	{
+		return Vector( -x, -y );
+	}
+
+
 	Vector operator+( Vector vector )
 	{
 		return Vector( x + vector.x, y + vector.y );
 	}
 
 
-	double operator+( int i )
+	double operator+( double i )
 	{
 		return length() + i;
 	}
@@ -98,15 +118,27 @@ public:
 	}
 
 
-	double operator-( int i )
+	double operator-( double i )
 	{
 		return length() - i;
+	}
+
+
+	Vector operator*( double i )
+	{
+		return Vector( i * x, i * y );
 	}
 
 
 	double operator*( Vector vector )
 	{
 		return x * vector.y + y * vector.y;
+	}
+
+	std::string operator std::string() const {
+		std::ostringstream strs;
+		strs << "[" << x << "," << y << "]";
+		return strs.str();
 	}
 
 
