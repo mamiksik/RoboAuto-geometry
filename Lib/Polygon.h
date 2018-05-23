@@ -23,7 +23,6 @@ public:
 	double distance( Vector point )
 	{
 		Line line = Line( vectors[ vectors.size() - 1 ], vectors[ 0 ] );
-
 		double distance = line.distance( point );
 
 		for ( int i = 0; i < vectors.size() - 1; ++i ) {
@@ -49,9 +48,9 @@ public:
 		bool inside = false;
 		int count = 0;
 
-		Line line{ vectors[ vectors.size() - 1 ], vectors[ 0 ] };
-
 		Line ray{ point, Vector( maxX + 1, point.y ) };
+
+		Line line{ vectors[ vectors.size() - 1 ], vectors[ 0 ] };
 		if ( line.intersect( ray ) ) count++;
 
 		for ( int i = 0; i < vectors.size() - 1; ++i ) {

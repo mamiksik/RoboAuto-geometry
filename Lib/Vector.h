@@ -12,7 +12,6 @@ enum Axe
 {
 	x = 0,
 	y,
-	z
 };
 
 class Vector : public Drawable
@@ -111,6 +110,11 @@ public:
 		return length() + i;
 	}
 
+//	std::string operator+(std::string ss)
+//	{
+//		return  "["  + std::to_string(x) + "," + std::to_string(y) + "]" + ss;
+//	}
+
 
 	Vector operator-( Vector vector )
 	{
@@ -135,12 +139,9 @@ public:
 		return x * vector.y + y * vector.y;
 	}
 
-	std::string operator std::string() const {
-		std::ostringstream strs;
-		strs << "[" << x << "," << y << "]";
-		return strs.str();
+	operator std::string() {
+		return "["  + std::to_string(x) + "," + std::to_string(y) + "]";
 	}
-
 
 	double x;
 	double y;

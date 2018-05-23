@@ -81,7 +81,7 @@ int main( int argc, char *argv[] )
 	Drawer::draw(p, "p");
 
 	assert < bool >( r.contains( F ), false );
-	assert < bool >( r.contains( Z ), true );
+	assert < bool >( r.contains( Z ), false );
 
 //	/assert < bool >( p.contains( Z ), true );
 
