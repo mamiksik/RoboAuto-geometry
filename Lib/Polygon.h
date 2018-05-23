@@ -5,25 +5,30 @@
 #pragma once
 
 #include <array>
+#include <iostream>
 
 #include "Line.h"
 
 template < int size >
-class Polygon
+class Polygon : public Drawable
 {
 public:
-	Polygon( std::array < Vector, size > & _points ) : points{ _points } { }
+	Polygon( std::array < Vector, size > & _points ) : vectors{ _points }, maxX(vectors[ 0 ].x) {
+		for ( int i = 1 ; i < vectors.size(); ++i ) {
+			if (vectors[ i ].x > maxX) maxX = vectors[ i ].x;
+		}
+	}
 
 
 	double distance( Vector point )
 	{
-		Line line = Line( points[ points.size() - 1 ], points[ 0 ] );
+		Line line = Line( vectors[ vectors.size() - 1 ], vectors[ 0 ] );
 
 		double distance = line.distance( point );
 
-		for ( int i = 0; i < points.size() - 1; ++i ) {
+		for ( int i = 0; i < vectors.size() - 1; ++i ) {
 
-			line = Line( points[ i ], points[ i + 1 ] );
+			line = Line( vectors[ i ], vectors[ i + 1 ] );
 
 			double d = line.distance( point );
 
@@ -43,24 +48,18 @@ public:
 
 		bool inside = false;
 		int count = 0;
-		for ( int i = 0; i < points.size() - 1; ++i ) {
 
-			Line line{ points[ i ], points[ i + 1 ] };
-//			double xi = points[ i ].x;
-//			double yi = points[ i ].y;
+		Line line{ vectors[ vectors.size() - 1 ], vectors[ 0 ] };
 
-//			double xj = points[ i + 1 ].x;
-//			double yj = points[ i + 1 ].y;
+		Line ray{ point, Vector( maxX + 1, point.y ) };
+		if ( line.intersection( ray ) ) count++;
 
+		for ( int i = 0; i < vectors.size() - 1; ++i ) {
 
-//			bool intersect = ( ( yi > y ) != ( yj > y ) ) && ( x < ( xj - xi ) * ( y - yi ) / ( yj - yi ) + xi );
+			line = Line{ vectors[ i ], vectors[ i + 1 ] };
 
-//			if ( intersect ) inside = !inside;
-
-			if ( line.intersection( line ) ) count++;
+			if ( line.intersection( ray ) ) count++;
 		}
-
-		std::cout << count << std::endl;
 
 		return count % 2 != 0;
 	}
@@ -69,29 +68,36 @@ public:
 	Polygon < size > rotate( float angle, Vector point )
 	{
 		auto rotatedPoints = std::array < Vector, size >{ point, point, point, point };
-		for ( int i = 0; i < points.size(); ++i ) {
-			rotatedPoints[ i ] = points[ i ].rotate( angle, point );
+		for ( int i = 0; i < vectors.size(); ++i ) {
+			rotatedPoints[ i ] = vectors[ i ].rotate( angle, point );
 		}
 
 		return Polygon < size >( rotatedPoints );
 	}
 
 
-	QLineSeries *draw( std::string name = "" )
+	std::array < Vector, size > getVectors( )
 	{
-		auto *lineSerie = new QLineSeries();
-		for ( int i = 0; i < points.size(); ++i ) {
-			lineSerie->append( points[ i ].x, points[ i ].y );
+		return vectors;
+	}
+
+
+	QAbstractSeries *draw( std::string name ) override
+	{
+		auto *lineSeries = new QLineSeries();
+		for ( int i = 0; i < getVectors().size(); ++i ) {
+			lineSeries->append( getVectors()[ i ].x, getVectors()[ i ].y );
 		}
 
-		lineSerie->append( points[ 0 ].x, points[ 0 ].y );
-		lineSerie->setName( name.c_str() );
+		lineSeries->append( getVectors()[ 0 ].x, getVectors()[ 0 ].y );
+		lineSeries->setName( name.c_str() );
 
-		return lineSerie;
+
+		return lineSeries;
 	}
 
 
 private:
-	std::array < Vector, size > points;
-//	auto *lineSerie;
+	double maxX;
+	std::array < Vector, size > vectors;
 };

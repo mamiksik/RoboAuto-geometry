@@ -5,14 +5,12 @@
 #pragma once
 
 #include <stdexcept>
-#include <QtCharts>
-//#include <opencl-c.h>
-//#include <cmath>
+#include "Drawer.h"
+
 #include "Vector.h"
 
-using namespace QtCharts;
 
-class Line
+class Line : public Drawable
 {
 public:
 	Line( Vector A, Vector B, bool _infinite = true ) : vectorA( A ),
@@ -31,10 +29,11 @@ public:
 
 	int orientation( Vector v )
 	{
-		int val = ( vectorA.y - vectorB.y ) * ( v.x - vectorA.x ) -
-		          ( vectorA.x - vectorB.x ) * ( v.y - vectorA.y );
+		float val = ( ( vectorB.y - vectorA.y ) * ( v.x - vectorB.x ) ) -
+		          ( ( vectorB.x - vectorA.x ) * ( v.y - vectorB.y ) );
 
-		if ( val == 0 ) return 0;  // colinear
+
+		if ( val == 0 ) return 0; // colinear
 
 		return ( val > 0 ) ? 1 : 2;
 	}
@@ -43,8 +42,9 @@ public:
 	bool onSegment( Vector v )
 	{
 		if ( vectorB.x <= std::max( vectorA.x, v.x ) && vectorB.x >= std::min( vectorA.x, v.x ) &&
-		     vectorB.y <= std::max( vectorA.y, v.y ) && vectorB.y >= std::min( vectorA.y, v.y ) )
+		     vectorB.y <= std::max( vectorA.y, v.y ) && vectorB.y >= std::min( vectorA.y, v.y ) ) {
 			return true;
+		}
 
 		return false;
 	}
@@ -68,6 +68,12 @@ public:
 //			throw std::invalid_argument( "Line can not be paraller." );
 //		}
 
+//		Drawer::draw( line.vectorA, "line A" );
+//		Drawer::draw( line.vectorB, "line B" );
+
+//		Drawer::draw( vectorA, "A" );
+//		Drawer::draw( vectorB, "B" );
+
 		int o1 = orientation( line.vectorA );
 		int o2 = orientation( line.vectorB );
 
@@ -75,6 +81,7 @@ public:
 		int o4 = line.orientation( vectorB );
 
 		bool intersect = false;
+
 
 		if ( o1 != o2 && o3 != o4 ) intersect = true;
 
@@ -91,10 +98,9 @@ public:
 		// p2, q2 and q1 are colinear and q1 lies on segment p2q2
 		if ( o4 == 0 && onSegment( line.vectorB ) ) intersect = true;
 
-		if (intersect) {
-			lineS->append( line.vectorA.x, line.vectorA.y );
-			lineS->append( line.vectorB.x, line.vectorB.y );
-		}
+//		if (intersect)
+//			Drawer::draw( line, "intersect" );
+
 		return intersect;
 //		double x = ( b * line.c - line.b * c ) / ( a * line.b - line.a - b );
 //		double y = ( line.a * c - a * line.c ) / ( a * line.b - line.a - b );
@@ -103,15 +109,15 @@ public:
 	}
 
 
-	QLineSeries *draw( std::string name = "" )
+	QAbstractSeries *draw( std::string name ) override
 	{
-//		auto *line = new QLineSeries();
-		lineS->append( vectorA.x, vectorA.y );
-		lineS->append( vectorB.x, vectorB.y );
+		auto *series = new QLineSeries();
+		series->append( vectorA.x, vectorA.y );
+		series->append( vectorB.x, vectorB.y );
 
-		lineS->setName( name.c_str() );
+		series->setName( name.c_str() );
 
-		return lineS;
+		return series;
 	}
 
 
@@ -123,6 +129,4 @@ public:
 	double c;
 
 	bool infinite;
-
-	QLineSeries *lineS = new QLineSeries();
 };

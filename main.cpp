@@ -1,9 +1,8 @@
-#define QT
-
 #include <iostream>
 #include "Lib/Vector.h"
 #include "Lib/Line.h"
 #include "Lib/Polygon.h"
+#include "Lib/Drawer.h"
 
 #include <QtCharts>
 
@@ -34,10 +33,10 @@ int main( int argc, char *argv[] )
 	Vector K{ 2, 2 };
 	Vector L{ 4, 2 };
 	Vector M{ 4, 4 };
-	Vector N{ 1, 4 };
+	Vector N{ 2, 4 };
 
-	Vector F{ 3.3, 3.3 };
-	Vector R{ 1.5, 3.3 };
+	Vector F{ 3, 3.3 };
+	Vector R{ 1.5, 3.6 };
 
 	Vector Q{ 4, 4 };
 	Vector W{ 3, 3 };
@@ -46,7 +45,7 @@ int main( int argc, char *argv[] )
 	Vector U{ -1, 0 };
 	Vector I{ 3, 1 };
 
-	Line p = Line( A, C );
+
 
 	std::array < Vector, 4 > point = { K, L, M, N };
 	std::array < Vector, 6 > pointl = { Q, W, E, T, U, I };
@@ -56,87 +55,30 @@ int main( int argc, char *argv[] )
 
 
 	// Point test
-	assert < bool >( o.contains( R ), true );
 	assert < double >( roundf( A.distance( O ) * 100 ) / 100,  roundf( 1.41 * 100 ) / 100);
 
 	assert < bool >( o.contains( B ), false );
 	assert < bool >( o.contains( F ), true );
+	assert < bool >( l.contains( F ), false );
+//
+	Drawer::draw(R, "R");
 
-	assert < bool >( o.contains( R ), true );
-	assert < bool >( l.contains( R ), true );
+	Drawer::draw(o, "o");
+	Drawer::draw(l, "l");
 
-	auto *chart = new QChart();
-	chart->addSeries( B.draw( "B" ) );
-	chart->addSeries( F.draw( "F" ) );
-	chart->addSeries( R.draw( "R" ) );
-	chart->addSeries( p.draw( "p" ) );
-	chart->addSeries( o.draw( "o" ) );
-	chart->addSeries( l.draw( "l" ) );
+	assert < bool >( o.contains( R ), false );
+	assert < bool >( l.contains( R ), false );
+//	assert < bool >( p.intersection( Line(R, Vector(99999, R.y)) ), false );
 
-	chart->addSeries( ( o.rotate( 10, O ) ).draw( "o rotated" ) );
+	Drawer::draw(B, "B");
+	Drawer::draw(F, "F");
 
-	chart->setTitle( "Data" );
-	chart->createDefaultAxes();
-	chart->axisX()->setRange( -10, 10 );
-	chart->axisY()->setRange( -10, 10 );
+//	Drawer::draw(p, "p");
 
 
-	auto *chartView = new QChartView( chart );
-
-	chartView->setRenderHint( QPainter::Antialiasing );
-	chartView->setRubberBand( QChartView::RectangleRubberBand );
-
-	QMainWindow window;
-	window.setCentralWidget( chartView );
-	window.resize( 400, 400 );
-	window.show();
+	Drawer::show();
 
 	return application.exec();
-
-//	Vector a{ A };
-//	Vector b{ B };
-//
-//	// Vector test
-//	std::cout << ( b == a ) << " : Should be false" << std::endl;
-//	std::cout << ( a != a ) << " : Should be false" << std::endl;
-//
-//	std::cout << ( a + b ).point.coordinates[ GeometricEntity::axe::x ] << " : Should be 1" << std::endl;
-//	std::cout << ( a - 1 ) << " : Should be 0.41" << std::endl;
-//
-//	std::cout << a * b << " : Should be 0" << std::endl;
-//
-//
-//	Line p = Line( A, B );
-//	Line o = Line( X, B );
-//
-//	Line q = Line( Z, Q );
-//
-//	// Line Test
-//	std::cout << p.isPerpendicular( o ) << " : Should be true" << std::endl;
-//	std::cout << p.isParaller( q ) << " : Should be true" << std::endl;
-//
-//	std::cout << p.distance( C ) << " : Distance from p to A. Should be 0" << std::endl;
-//	std::cout << p.distance( D ) << " : Distance from p to B. Should be 1.41" << std::endl;
-//
-//	Point K{ 1, 1 };
-//	Point L{ 2, 1 };
-//	Point M{ 2, 2 };
-//	Point N{ 1, 2 };
-
-//	Polygon polygon = {K, L, M, N};
-//	std::vector<double> t(1000);
-//	std::vector<double> x(t.size());
-
-//	std::vector<double> x(1),y(1);
-//	x.at(0) = (A.coordinates[Point::axe::x]);
-//	y.at(0) = (A.coordinates[Point::axe::y]);
-
-//	plt::scatter < int >( 2, 2 );
-//
-//	plt::xkcd();
-//	plt::legend();
-//	plt::grid( true );
-//	plt::save( "xkcd.png" );
 
 }
 

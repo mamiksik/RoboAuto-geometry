@@ -3,22 +3,22 @@
 //
 
 #pragma once
-#include <QtCharts>
+
 #include <cmath>
+#include "Drawable.h"
 
-
-using namespace QtCharts;
-
-enum Axe {
+enum Axe
+{
 	x = 0,
 	y,
 	z
 };
 
-class Vector
+class Vector : public Drawable
 {
 public:
-	Vector( double _x, double _y): x(_x), y(_y){};
+	Vector( double _x, double _y ) : x( _x ), y( _y ) { };
+
 
 	double length( )
 	{
@@ -27,28 +27,17 @@ public:
 		);
 	}
 
+
 	double distance( Vector vector )
 	{
-		return sqrt(pow(vector.x - x, 2) + pow(vector.y - y, 2));
-	}
-
-	QScatterSeries* draw(std::string name = "") {
-		auto *point = new QScatterSeries();
-
-		point->setMarkerShape(QScatterSeries::MarkerShapeCircle);
-		point->setMarkerSize(10.0);
-
-		point->append(x, y);
-		point->setName(name.c_str());
-
-		return point;
+		return sqrt( pow( vector.x - x, 2 ) + pow( vector.y - y, 2 ) );
 	}
 
 
-	Vector rotate(float angle, Vector center)
+	Vector rotate( float angle, Vector center )
 	{
-		float s = sin(angle * M_PI / 180);
-		float c = cos(angle * M_PI/ 180);
+		float s = sin( angle * M_PI / 180 );
+		float c = cos( angle * M_PI / 180 );
 
 		double nx = x - center.x;
 		double ny = y - center.y;
@@ -62,6 +51,20 @@ public:
 		ny = ynew + center.y;
 
 		return Vector( nx, ny );
+	}
+
+
+	QAbstractSeries *draw( std::string name ) override
+	{
+		auto *point = new QScatterSeries();
+
+		point->setMarkerShape( QScatterSeries::MarkerShapeCircle );
+		point->setMarkerSize( 10.0 );
+
+		point->append( x, y );
+		point->setName( name.c_str() );
+
+		return point;
 	}
 
 
@@ -79,7 +82,7 @@ public:
 
 	Vector operator+( Vector vector )
 	{
-		return Vector( x + vector.x, y + vector.y);
+		return Vector( x + vector.x, y + vector.y );
 	}
 
 
@@ -91,7 +94,7 @@ public:
 
 	Vector operator-( Vector vector )
 	{
-		return Vector( x - vector.x, y - vector.y);
+		return Vector( x - vector.x, y - vector.y );
 	}
 
 
