@@ -29,13 +29,8 @@ public:
 
 	double segmentDistance( Vector & vector )
 	{
-		Vector n = to - from;
-		Vector pa = from - vector;
-		Vector c = n * ( ( pa * n ) / ( n * n ) );
-		Vector d = pa - c;
-
-		return sqrt( d * d );
-
+		Vector diff = vector - nearestVectorOnLineSegment( vector );
+		return diff.length();
 	}
 
 
@@ -53,11 +48,11 @@ public:
 
 	bool intersect( Line line )
 	{
-		int o1 = orientation( line.from );
-		int o2 = orientation( line.to );
+		Orientation o1 = orientation( line.from );
+		Orientation o2 = orientation( line.to );
 
-		int o3 = line.orientation( from );
-		int o4 = line.orientation( to );
+		Orientation o3 = line.orientation( from );
+		Orientation o4 = line.orientation( to );
 
 		bool intersect = false;
 
@@ -66,16 +61,16 @@ public:
 
 		// Special Cases
 		// p1, q1 and p2 are colinear and p2 lies on segment p1q1
-		if ( o1 == 0 && onSegment( line.from ) ) intersect = true;
+		if ( o1 == Orientation::collinear && onSegment( line.from ) ) intersect = true;
 
 		// p1, q1 and q2 are colinear and q2 lies on segment p1q1
-		if ( o2 == 0 && onSegment( line.from ) ) intersect = true;
+		if ( o2 == Orientation::collinear && onSegment( line.from ) ) intersect = true;
 
 		// p2, q2 and p1 are colinear and p1 lies on segment p2q2
-		if ( o3 == 0 && onSegment( line.to ) ) intersect = true;
+		if ( o3 == Orientation::collinear && onSegment( line.to ) ) intersect = true;
 
 		// p2, q2 and q1 are colinear and q1 lies on segment p2q2
-		if ( o4 == 0 && onSegment( line.to ) ) intersect = true;
+		if ( o4 == Orientation::collinear && onSegment( line.to ) ) intersect = true;
 
 		return intersect;
 	}
@@ -83,7 +78,7 @@ public:
 
 	Vector intersection( Line line )
 	{
-		if ( ( !infinite && !intersect( line ) ) || !isParaller( line ) ) {
+		if ( ( !infinite && !intersect( line ) ) || isParaller( line ) ) {
 			//TODO: Exception
 			throw "Lines do not intersect";
 		}
@@ -91,7 +86,33 @@ public:
 		double x = ( b * line.c - line.b * c ) / ( a * line.b - line.a - b );
 		double y = ( line.a * c - a * line.c ) / ( a * line.b - line.a - b );
 
-		return Vector( x, y );
+		return { x, y };
+	}
+
+
+	Vector nearestVectorOnLine( Vector & vector )
+	{
+		double x = ( -a * b * vector.y + b * b * vector.x - a * c ) / ( b * b + a * a );
+		double y = ( a * a * vector.y - a * b * vector.x - b * c ) / ( b * b + a * a );
+
+		return { x, y };
+	}
+
+
+	Vector nearestVectorOnLineSegment( Vector & vector )
+	{
+		Vector nearestVectorOnLine{ x, y };
+
+		auto dir = whichHalfPlane( nearestVectorOnLine );
+
+		switch ( dir ) {
+			case Direction::zero:
+				return nearestVectorOnLine;
+			case Direction::left:
+				return from;
+			case Direction::right:
+				return to;
+		}
 	}
 
 
@@ -119,15 +140,20 @@ public:
 
 private:
 
-	int orientation( Vector v )
+	enum Orientation
 	{
-		float val = ( ( to.y - from.y ) * ( v.x - to.x ) ) -
-		            ( ( to.x - from.x ) * ( v.y - to.y ) );
+		collinear = 0,
+		clockWise,
+		counterClockWise
+	};
 
 
-		if ( val == 0 ) return 0; // colinear
+	Orientation orientation( Vector v )
+	{
+		double val = ( ( to.y - from.y ) * ( v.x - to.x ) ) - ( ( to.x - from.x ) * ( v.y - to.y ) );
+		if ( val == 0 ) return Orientation::collinear;
 
-		return ( val > 0 ) ? 1 : 2;
+		return ( val > 0 ) ? Orientation::clockWise : Orientation::counterClockWise;
 	}
 
 
@@ -138,6 +164,28 @@ private:
 		       to.y <= std::max( from.y, v.y ) &&
 		       to.y >= std::min( from.y, v.y );
 
+	}
+
+
+	enum Direction
+	{
+		left = -1,
+		right,
+		zero
+	};
+
+
+	Direction whichHalfPlane( Vector & vector )
+	{
+		auto nFrom = from - to;
+		auto nVector = from - vector;
+
+		double crossProduct = from.crossProduct( nVector );
+
+		if ( crossProduct > 0 ) return Direction::left;
+		if ( crossProduct < 0 ) return Direction::right;
+
+		return Direction::zero;
 	}
 
 

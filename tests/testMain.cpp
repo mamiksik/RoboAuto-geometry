@@ -3,7 +3,8 @@
 //
 
 
-#include "TestVector.h"
+#include "VectorTest.h"
+#include "LineTest.h"
 
 int main(int argc, char **argv)
 {

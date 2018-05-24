@@ -87,6 +87,12 @@ public:
 	}
 
 
+	double crossProduct(Vector& vector)
+	{
+		return x * vector.y - y * vector.x;
+	}
+
+
 	bool operator==( Vector vector ) const
 	{
 		return x == vector.x && y == vector.y;
