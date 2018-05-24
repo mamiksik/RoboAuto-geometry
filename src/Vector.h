@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <sstream>
+#include <QScatterSeries>
 #include "Drawable.h"
 
 enum Axe
@@ -34,19 +35,19 @@ public:
 
 	double alpha( )
 	{
-		return atan2(y, x);
+		return atan2( y, x );
 	}
 
 
-	Vector rotate( float radian )
+	Vector rotate( double radian )
 	{
-		float s = sin( radian );
-		float c = cos( radian );
+		double s = sin( radian );
+		double c = cos( radian );
 
-		return Vector(
-				x * c - y * s,
-				x * s + y * c
-		);
+		return {
+				x * c + y * s,
+				-x * s + y * c
+		};
 	}
 
 
@@ -55,15 +56,20 @@ public:
 		float s = sin( radian );
 		float c = cos( radian );
 
-		return Vector(
-				( x * c - y * s ) + center.x,
-				( x * s + y * c ) + center.y
-		);
+		double nx = x - center.x;
+		double ny = y - center.y;
+
+		return {
+				( nx * c + ny * s ) + center.x,
+				( -nx * s + ny * c ) + center.y
+		};
 	}
 
+
 	//TODO: Check
-	double angleWith(Vector& vector){
-		return abs(alpha() - vector.alpha());
+	double angleWith( Vector & vector )
+	{
+		return abs( alpha() - vector.alpha() );
 	}
 
 
@@ -81,27 +87,27 @@ public:
 	}
 
 
-	bool operator==( Vector vector )
+	bool operator==( Vector vector ) const
 	{
 		return x == vector.x && y == vector.y;
 	}
 
 
-	bool operator!=( Vector vector )
+	bool operator!=( Vector vector ) const
 	{
 		return x != vector.x || y != vector.y;
 	}
 
 
-	Vector operator!( )
+	Vector operator!( ) const
 	{
-		return Vector( -x, -y );
+		return { -x, -y };
 	}
 
 
-	Vector operator+( Vector vector )
+	Vector operator+( Vector vector ) const
 	{
-		return Vector( x + vector.x, y + vector.y );
+		return { x + vector.x, y + vector.y };
 	}
 
 
@@ -110,15 +116,10 @@ public:
 		return length() + i;
 	}
 
-//	std::string operator+(std::string ss)
-//	{
-//		return  "["  + std::to_string(x) + "," + std::to_string(y) + "]" + ss;
-//	}
 
-
-	Vector operator-( Vector vector )
+	Vector operator-( Vector vector ) const
 	{
-		return Vector( x - vector.x, y - vector.y );
+		return { x - vector.x, y - vector.y };
 	}
 
 
@@ -128,20 +129,23 @@ public:
 	}
 
 
-	Vector operator*( double i )
+	Vector operator*( double i ) const
 	{
-		return Vector( i * x, i * y );
+		return { i * x, i * y };
 	}
 
 
-	double operator*( Vector vector )
+	double operator*( Vector vector ) const
 	{
-		return x * vector.y + y * vector.y;
+		return x * vector.x + y * vector.y;
 	}
 
-	operator std::string() {
-		return "["  + std::to_string(x) + "," + std::to_string(y) + "]";
+
+	explicit operator std::string( ) const
+	{
+		return "[" + std::to_string( x ) + "," + std::to_string( y ) + "]";
 	}
+
 
 	double x;
 	double y;

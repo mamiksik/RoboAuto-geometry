@@ -1,8 +1,8 @@
 #include <iostream>
-#include "Lib/Vector.h"
-#include "Lib/Line.h"
-#include "Lib/Polygon.h"
-#include "Lib/Drawer.h"
+#include "Vector.h"
+#include "Line.h"
+#include "Polygon.h"
+#include "Drawer.h"
 
 #include <QtCharts>
 
