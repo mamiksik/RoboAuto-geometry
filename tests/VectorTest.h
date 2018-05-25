@@ -9,11 +9,40 @@
 
 #define PRECISION 0.00001
 
-TEST( Vector, lenght )
+TEST( Vector, alpha )
 {
-	Vector B{ 1, 1 };
+	Vector A{ 1, 1 };
 
-	ASSERT_FLOAT_EQ( 1.4142135, B.length() );
+	ASSERT_FLOAT_EQ( M_PI_4, A.alpha() );
+
+}
+
+
+TEST( Vector, angleWith )
+{
+	Vector A{ 0, 1 };
+	Vector B{ 1, 0 };
+	Vector C{ 1, 1 };
+	Vector E{ -1, 1 };
+
+	double a = A.angleWith( B );
+	double d = A.angleWith( C );
+
+	double e = B.angleWith( E );
+
+
+	ASSERT_NEAR( M_PI_2, a, PRECISION );
+	ASSERT_NEAR( M_PI_4, d, PRECISION );
+	ASSERT_NEAR( M_PI * 3 / 4, e, PRECISION );
+}
+
+
+TEST( Vector, crossProduct )
+{
+	Vector B{ 4, 3 };
+	Vector A{ 3, 4 };
+
+	ASSERT_FLOAT_EQ( B.crossProduct( A ), 4 * 4 - 3 * 3 );
 }
 
 
@@ -32,11 +61,11 @@ TEST( Vector, distance )
 }
 
 
-TEST( Vector, alpha )
+TEST( Vector, lenght )
 {
-	Vector A{ 1, 1 };
+	Vector B{ 1, 1 };
 
-	ASSERT_FLOAT_EQ( M_PI_4, A.alpha() );
+	ASSERT_FLOAT_EQ( 1.4142135, B.length() );
 }
 
 
@@ -63,25 +92,6 @@ TEST( Vector, rotateAround )
 
 	ASSERT_NEAR( -1, D.x, PRECISION );
 	ASSERT_NEAR( 1, D.y, PRECISION );
-}
-
-
-TEST( Vector, angleWith )
-{
-	Vector A{ 0, 1 };
-	Vector B{ 1, 0 };
-	Vector C{ 1, 1 };
-	Vector E{ -1, 1 };
-
-	double a = A.angleWith( B );
-	double d = A.angleWith( C );
-
-	double e = B.angleWith( E );
-
-
-	ASSERT_NEAR( M_PI_2, a, PRECISION );
-	ASSERT_NEAR( M_PI_4, d, PRECISION );
-	ASSERT_NEAR( M_PI * 3 / 4, e, PRECISION );
 }
 
 
@@ -117,6 +127,7 @@ TEST( Vector, add )
 	ASSERT_NEAR( C + 1, 2.41421, PRECISION );
 }
 
+
 TEST( Vector, substract )
 {
 	Vector A{ 2, 2 };
@@ -129,6 +140,7 @@ TEST( Vector, substract )
 	ASSERT_NEAR( C - 1, 0.41421, PRECISION );
 }
 
+
 TEST( Vector, multiply )
 {
 	Vector A{ 2, 2 };
@@ -137,12 +149,13 @@ TEST( Vector, multiply )
 	Vector R{ 6, 6 };
 
 	ASSERT_EQ( A * B, 10 );
-	ASSERT_EQ( A * 3, R);
+	ASSERT_EQ( A * 3, R );
 }
+
 
 TEST( Vector, toString )
 {
 	Vector A{ 2, 5 };
 
-	ASSERT_EQ( std::string(A), "[2.000000,5.000000]");
+	ASSERT_EQ( std::string(A), "[2.000000,5.000000]" );
 }

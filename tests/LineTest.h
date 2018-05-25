@@ -11,115 +11,152 @@
 
 TEST( Line, distance )
 {
-	Vector A(1, 0);
-	Vector B(0, 1);
-	Vector C(1, 1);
+	Vector A( 1, 0 );
+	Vector B( 0, 1 );
+	Vector C( 1, 1 );
 
-	Line p{A, B};
-	ASSERT_NEAR(p.distance(C), 1.41421 / 2 , PRECISION);
-}
-
-
-TEST( Line, segmentDistance )
-{
-	Vector A(1, 0);
-	Vector B(0, 1);
-
-	Vector D(0, 2);
-	Vector O(-1, 2);
-
-	Line p{A, B};
-
-	ASSERT_NEAR(p.segmentDistance(D), 1, PRECISION);
-	ASSERT_NEAR(p.segmentDistance(O), 1.4142171, PRECISION);
-}
-
-
-TEST( Line, isParaller )
-{
-	Vector A(0, 0);
-	Vector B(1, 1);
-
-	Vector C(-1, 0);
-	Vector D(0, 1);
-
-	Line p{A, B};
-	Line u{C, D};
-
-	ASSERT_EQ(p.isParaller(u), true);
-}
-
-TEST( Line, isPerpendicular )
-{
-	Vector A(0, 0);
-	Vector B(1, 1);
-
-	Vector D(-1, -1);
-
-	Line p{A, B};
-	Line u{A, D};
-
-	ASSERT_EQ(p.isPerpendicular(u), true);
+	Line p{ A, B };
+	ASSERT_NEAR( p.distance( C ), 1.41421 / 2, PRECISION );
 }
 
 
 TEST( Line, intersect )
 {
-	Vector A(0, 0);
-	Vector B(1, 1);
+	Vector A( 0, 0 );
+	Vector B( 1, 1 );
 
-	Vector C(-1, 1);
-	Vector D(1, 0);
+	Vector C( -1, 1 );
+	Vector D( 1, 0 );
 
-	Line p{A, B};
-	Line u{C, D};
+	Line p{ A, B };
+	Line u{ C, D };
 
-	ASSERT_EQ(p.intersect(u), true);
+	ASSERT_EQ( p.intersect( u ), true );
 }
+
 
 TEST( Line, intersection )
 {
-	Vector A(0, 0);
-	Vector B(2, 2);
+	Vector A( 0, 0 );
+	Vector B( 2, 2 );
 
-	Vector C(0, 2);
-	Vector D(2, 0);
+	Vector C( 0, 2 );
+	Vector D( 2, 0 );
 
-	Line p{A, B};
-	Line u{C, D};
+	Line p{ A, B };
+	Line u{ C, D };
 
-	Vector I(1, 1);
+	Vector I( 1, 1 );
 
-	ASSERT_EQ(p.intersection(u), I);
+	ASSERT_EQ( p.intersection( u ), I );
 }
 
 
-TEST(Line, nearestVectorOnLine)
+TEST( Line, isParaller )
 {
-	Vector A(0, 0);
-	Vector B(1, 1);
+	Vector A( 0, 0 );
+	Vector B( 1, 1 );
 
-	Vector C(1, 3);
-	Vector N(2, 2);
+	Vector C( -1, 0 );
+	Vector D( 0, 1 );
 
-	Line p{A, B};
+	Line p{ A, B };
+	Line u{ C, D };
 
-	ASSERT_EQ(p.nearestVectorOnLine(C), N);
+	ASSERT_EQ( p.isParaller( u ), true );
 }
 
-TEST(Line, nearestVectorOnLineSegment)
+
+TEST( Line, isPerpendicular )
 {
-	Vector A(0, 0);
-	Vector B(1, 1);
+	Vector A( 0, 0 );
+	Vector B( 1, 1 );
 
-	Vector C(1, 3);
-	Vector N(1, 1);
+	Vector D( -1, -1 );
 
-	Vector X(0, 1);
-	Vector Q(0.5, 0.5);
+	Line p{ A, B };
+	Line u{ A, D };
 
-	Line p{A, B};
-
-	ASSERT_EQ(p.nearestVectorOnLineSegment(C), N);
-	ASSERT_EQ(p.nearestVectorOnLineSegment(X), Q);
+	ASSERT_EQ( p.isPerpendicular( u ), true );
 }
+
+
+TEST( Line, nearestVectorOnLine )
+{
+	Vector A( 0, 0 );
+	Vector B( 1, 1 );
+
+	Vector C( 1, 3 );
+	Vector N( 2, 2 );
+
+	Line p{ A, B };
+
+	ASSERT_EQ( p.nearestVectorOnLine( C ), N );
+}
+
+
+TEST( Line, nearestVectorOnLineSegment )
+{
+	Vector A( 0, 0 );
+	Vector B( 1, 1 );
+
+	Vector C( 1, 3 );
+	Vector N( 1, 1 );
+
+	Vector X( 0, 1 );
+	Vector Q( 0.5, 0.5 );
+
+	Line p{ A, B };
+
+	ASSERT_EQ( p.nearestVectorOnLineSegment( C ), N );
+	ASSERT_EQ( p.nearestVectorOnLineSegment( X ), Q );
+}
+
+
+TEST( Line, normalVector )
+{
+	Vector A( 4, 2 );
+	Vector R( 4, -2 );
+
+	ASSERT_EQ( A, R );
+}
+
+
+TEST( Line, onSegment )
+{
+	Vector A( 0, 0 );
+	Vector B( 1, 1 );
+
+	Vector X( 2, 5 );
+	Vector Q( 0.5, 0.5 );
+
+	Line p{ A, B };
+
+	ASSERT_EQ( p.onSegment( X ), false );
+	ASSERT_EQ( p.onSegment( Q ), true );
+}
+
+
+TEST( Line, reverse )
+{
+	Vector A( 2, 4 );
+	Vector B( 4, 2 );
+	ASSERT_EQ( A, B );
+}
+
+
+TEST( Line, segmentDistance )
+{
+	Vector A( 1, 0 );
+	Vector B( 0, 1 );
+
+	Vector D( 0, 2 );
+	Vector O( -1, 2 );
+
+	Line p{ A, B };
+
+	ASSERT_NEAR( p.segmentDistance( D ), 1, PRECISION );
+	ASSERT_NEAR( p.segmentDistance( O ), 1.4142171, PRECISION );
+}
+
+

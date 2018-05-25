@@ -21,9 +21,22 @@ public:
 	Vector( double _x, double _y ) : x( _x ), y( _y ) { };
 
 
-	double length( )
+	double alpha( )
 	{
-		return sqrt( pow( x, 2 ) + pow( y, 2 ) );
+		return atan2( y, x );
+	}
+
+
+	//TODO: Check
+	double angleWith( Vector & vector )
+	{
+		return abs( alpha() - vector.alpha() );
+	}
+
+
+	double crossProduct( Vector & vector )
+	{
+		return x * vector.y - y * vector.x;
 	}
 
 
@@ -33,9 +46,23 @@ public:
 	}
 
 
-	double alpha( )
+	QAbstractSeries *draw( std::string name ) override
 	{
-		return atan2( y, x );
+		auto *point = new QScatterSeries();
+
+		point->setMarkerShape( QScatterSeries::MarkerShapeCircle );
+		point->setMarkerSize( 10.0 );
+
+		point->append( x, y );
+		point->setName( name.c_str() );
+
+		return point;
+	}
+
+
+	double length( )
+	{
+		return sqrt( pow( x, 2 ) + pow( y, 2 ) );
 	}
 
 
@@ -63,33 +90,6 @@ public:
 				( nx * c + ny * s ) + center.x,
 				( -nx * s + ny * c ) + center.y
 		};
-	}
-
-
-	//TODO: Check
-	double angleWith( Vector & vector )
-	{
-		return abs( alpha() - vector.alpha() );
-	}
-
-
-	QAbstractSeries *draw( std::string name ) override
-	{
-		auto *point = new QScatterSeries();
-
-		point->setMarkerShape( QScatterSeries::MarkerShapeCircle );
-		point->setMarkerSize( 10.0 );
-
-		point->append( x, y );
-		point->setName( name.c_str() );
-
-		return point;
-	}
-
-
-	double crossProduct(Vector& vector)
-	{
-		return x * vector.y - y * vector.x;
 	}
 
 

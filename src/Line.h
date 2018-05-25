@@ -27,28 +27,16 @@ public:
 	};
 
 
-	double segmentDistance( Vector & vector )
+	QAbstractSeries *draw( std::string name ) override
 	{
-		Vector diff = vector - nearestVectorOnLineSegment( vector );
-		return diff.length();
+		auto *series = new QLineSeries();
+		series->append( from.x, from.y );
+		series->append( to.x, to.y );
+
+		series->setName( name.c_str() );
+		return series;
 	}
 
-
-	bool isParaller( Line line )
-	{
-		return ( -a / b ) == ( -line.a / b );
-	}
-
-
-	bool isPerpendicular( Line line )
-	{
-		return ( -a / b ) * ( -line.a / b ) == -1;
-	}
-
-	Vector normalVector()
-	{
-		return {x, -y};
-	}
 
 	bool intersect( Line line )
 	{
@@ -84,13 +72,25 @@ public:
 	{
 		if ( ( !infinite && !intersect( line ) ) || isParaller( line ) ) {
 			//TODO: Exception
-			throw std::invalid_argument("Lines do not intersect");
+			throw std::invalid_argument( "Lines do not intersect" );
 		}
 
 		double x = ( b * line.c - line.b * c ) / ( a * line.b - line.a - b );
 		double y = ( line.a * c - a * line.c ) / ( a * line.b - line.a - b );
 
 		return { x, y };
+	}
+
+
+	bool isParaller( Line line )
+	{
+		return ( -a / b ) == ( -line.a / b );
+	}
+
+
+	bool isPerpendicular( Line line )
+	{
+		return ( -a / b ) * ( -line.a / b ) == -1;
 	}
 
 
@@ -105,19 +105,25 @@ public:
 
 	Vector nearestVectorOnLineSegment( Vector & vector )
 	{
-		Vector nearest = nearestVectorOnLine(vector);
-		Line p = {nearest, vector};
+		Vector nearest = nearestVectorOnLine( vector );
+		Line p = { nearest, vector };
 
-		auto oFrom = p.orientation(from);
-		auto oTo = p.orientation(to);
+		auto oFrom = p.orientation( from );
+		auto oTo = p.orientation( to );
 
-		if (oFrom == oTo && oTo == Orientation::clockWise){
+		if ( oFrom == oTo && oTo == Orientation::clockWise ) {
 			return from;
-		} else if (oFrom == oTo && oTo == Orientation::counterClockWise){
+		} else if ( oFrom == oTo && oTo == Orientation::counterClockWise ) {
 			return to;
 		} else {
 			return nearest;
 		}
+	}
+
+
+	Vector normalVector( )
+	{
+		return { x, -y };
 	}
 
 
@@ -130,15 +136,19 @@ public:
 
 	}
 
-	QAbstractSeries *draw( std::string name ) override
-	{
-		auto *series = new QLineSeries();
-		series->append( from.x, from.y );
-		series->append( to.x, to.y );
 
-		series->setName( name.c_str() );
-		return series;
+	Line reverse( )
+	{
+		return { to, from };
 	}
+
+
+	double segmentDistance( Vector & vector )
+	{
+		Vector diff = vector - nearestVectorOnLineSegment( vector );
+		return diff.length();
+	}
+
 
 
 //	std::string operator+(std::string ss)
@@ -170,12 +180,12 @@ private:
 	}
 
 
-	Vector from;
-	Vector to;
-
 	double a;
 	double b;
 	double c;
+
+	Vector from;
+	Vector to;
 
 	bool infinite;
 };

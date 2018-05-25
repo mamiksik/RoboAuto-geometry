@@ -13,31 +13,12 @@ template < int size >
 class Polygon : public Drawable
 {
 public:
-	Polygon( std::array < Vector, size > & _points ) : vectors{ _points }, maxX(vectors[ 0 ].x) {
-		for ( int i = 1 ; i < vectors.size(); ++i ) {
-			if (vectors[ i ].x > maxX) maxX = vectors[ i ].x;
+	Polygon( std::array < Vector, size > & _points ) : vectors{ _points }, maxX( vectors[ 0 ].x )
+	{
+		for ( int i = 1; i < vectors.size(); ++i ) {
+			if ( vectors[ i ].x > maxX ) maxX = vectors[ i ].x;
 		}
 	}
-
-
-	double distance( Vector point )
-	{
-		Line line = Line( vectors[ vectors.size() - 1 ], vectors[ 0 ] );
-		double distance = line.distance( point );
-
-		for ( int i = 0; i < vectors.size() - 1; ++i ) {
-
-			line = Line( vectors[ i ], vectors[ i + 1 ] );
-
-			double d = line.distance( point );
-
-			if ( d < distance ) {
-				distance = d;
-			}
-		}
-
-		return distance;
-	};
 
 
 	bool contains( Vector point )
@@ -66,21 +47,24 @@ public:
 	}
 
 
-	Polygon < size > rotate( float angle, Vector point )
+	double distance( Vector vector )
 	{
-		std::array < Vector, size > rotatedPoints = vectors;
-		for ( int i = 0; i < vectors.size(); ++i ) {
-			rotatedPoints[ i ] = vectors[ i ].rotate( angle, point );
+		Line line = Line( vectors[ vectors.size() - 1 ], vectors[ 0 ] );
+		double distance = line.distance( vector );
+
+		for ( int i = 0; i < vectors.size() - 1; ++i ) {
+
+			line = Line( vectors[ i ], vectors[ i + 1 ] );
+
+			double d = line.distance( vector );
+
+			if ( d < distance ) {
+				distance = d;
+			}
 		}
 
-		return Polygon < size >( rotatedPoints );
-	}
-
-
-	std::array < Vector, size > getVectors( )
-	{
-		return vectors;
-	}
+		return distance;
+	};
 
 
 	QAbstractSeries *draw( std::string name ) override
@@ -93,6 +77,23 @@ public:
 		lineSeries->append( getVectors()[ 0 ].x, getVectors()[ 0 ].y );
 		lineSeries->setName( name.c_str() );
 		return lineSeries;
+	}
+
+
+	std::array < Vector, size > getVectors( )
+	{
+		return vectors;
+	}
+
+
+	Polygon < size > rotate( float angle, Vector point )
+	{
+		std::array < Vector, size > rotatedPoints = vectors;
+		for ( int i = 0; i < vectors.size(); ++i ) {
+			rotatedPoints[ i ] = vectors[ i ].rotate( angle, point );
+		}
+
+		return Polygon < size >( rotatedPoints );
 	}
 
 
