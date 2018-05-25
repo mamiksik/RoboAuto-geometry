@@ -24,7 +24,15 @@ int main( int argc, char *argv[] )
 {
 	QApplication application( argc, argv );
 
-	Vector O{ 0, 0 };
+//	std::string q = " - " + v.x + " - " v.y;
+
+//	std::cout <<  v.distance(C) << " - " << v.x << " - " << v.y<< std::endl;
+
+//	Drawer::draw(v, "nearest");
+
+//	Drawer::show();
+
+	/*Vector O{ 0, 0 };
 
 	Vector A{ 1, 1 };
 	Vector B{ -1.7, 1 };
@@ -81,14 +89,13 @@ int main( int argc, char *argv[] )
 	Drawer::draw(p, "p");
 
 	assert < bool >( r.contains( F ), false );
-	assert < bool >( r.contains( Z ), false );
+	assert < bool >( r.contains( Z ), false );*/
 
 //	/assert < bool >( p.contains( Z ), true );
 
-	Drawer::draw(r, "r");
+//	Drawer::draw(r, "r");
 
 //	Drawer::draw(p, "p");
-
 
 	Drawer::show();
 

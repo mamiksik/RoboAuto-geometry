@@ -13,12 +13,12 @@
 class Line : public Drawable
 {
 public:
-	Line( Vector _from, Vector _to, bool _infinite = false ) : from( _from ),
-	                                                           to( _to ),
-	                                                           a( from.y - to.y ),
-	                                                           b( to.x - from.x ),
-	                                                           c( -b * from.y + -a * from.x ),
-	                                                           infinite( _infinite ) { };
+	Line( Vector & _from, Vector & _to, bool _infinite = false ) : from( _from ),
+	                                                               to( _to ),
+	                                                               a( from.y - to.y ),
+	                                                               b( to.x - from.x ),
+	                                                               c( -b * from.y + -a * from.x ),
+	                                                               infinite( _infinite ) { };
 
 
 	double distance( Vector vector )
@@ -45,6 +45,10 @@ public:
 		return ( -a / b ) * ( -line.a / b ) == -1;
 	}
 
+	Vector normalVector()
+	{
+		return {x, -y};
+	}
 
 	bool intersect( Line line )
 	{
@@ -80,7 +84,7 @@ public:
 	{
 		if ( ( !infinite && !intersect( line ) ) || isParaller( line ) ) {
 			//TODO: Exception
-			throw "Lines do not intersect";
+			throw std::invalid_argument("Lines do not intersect");
 		}
 
 		double x = ( b * line.c - line.b * c ) / ( a * line.b - line.a - b );
@@ -101,20 +105,30 @@ public:
 
 	Vector nearestVectorOnLineSegment( Vector & vector )
 	{
-		Vector nearestVectorOnLine{ x, y };
+		Vector nearest = nearestVectorOnLine(vector);
+		Line p = {nearest, vector};
 
-		auto dir = whichHalfPlane( nearestVectorOnLine );
+		auto oFrom = p.orientation(from);
+		auto oTo = p.orientation(to);
 
-		switch ( dir ) {
-			case Direction::zero:
-				return nearestVectorOnLine;
-			case Direction::left:
-				return from;
-			case Direction::right:
-				return to;
+		if (oFrom == oTo && oTo == Orientation::clockWise){
+			return from;
+		} else if (oFrom == oTo && oTo == Orientation::counterClockWise){
+			return to;
+		} else {
+			return nearest;
 		}
 	}
 
+
+	bool onSegment( Vector v )
+	{
+		return to.x <= std::max( from.x, v.x ) &&
+		       to.x >= std::min( from.x, v.x ) &&
+		       to.y <= std::max( from.y, v.y ) &&
+		       to.y >= std::min( from.y, v.y );
+
+	}
 
 	QAbstractSeries *draw( std::string name ) override
 	{
@@ -123,7 +137,6 @@ public:
 		series->append( to.x, to.y );
 
 		series->setName( name.c_str() );
-
 		return series;
 	}
 
@@ -154,38 +167,6 @@ private:
 		if ( val == 0 ) return Orientation::collinear;
 
 		return ( val > 0 ) ? Orientation::clockWise : Orientation::counterClockWise;
-	}
-
-
-	bool onSegment( Vector v )
-	{
-		return to.x <= std::max( from.x, v.x ) &&
-		       to.x >= std::min( from.x, v.x ) &&
-		       to.y <= std::max( from.y, v.y ) &&
-		       to.y >= std::min( from.y, v.y );
-
-	}
-
-
-	enum Direction
-	{
-		left = -1,
-		right,
-		zero
-	};
-
-
-	Direction whichHalfPlane( Vector & vector )
-	{
-		auto nFrom = from - to;
-		auto nVector = from - vector;
-
-		double crossProduct = from.crossProduct( nVector );
-
-		if ( crossProduct > 0 ) return Direction::left;
-		if ( crossProduct < 0 ) return Direction::right;
-
-		return Direction::zero;
 	}
 
 

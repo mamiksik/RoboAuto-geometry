@@ -48,7 +48,9 @@ public:
 		bool inside = false;
 		int count = 0;
 
-		Line ray{ point, Vector( maxX + 1, point.y ) };
+		Vector rayEnd( maxX + 1, point.y );
+
+		Line ray{ point, rayEnd };
 
 		Line line{ vectors[ vectors.size() - 1 ], vectors[ 0 ] };
 		if ( line.intersect( ray ) ) count++;
@@ -90,8 +92,6 @@ public:
 
 		lineSeries->append( getVectors()[ 0 ].x, getVectors()[ 0 ].y );
 		lineSeries->setName( name.c_str() );
-
-
 		return lineSeries;
 	}
 

@@ -92,3 +92,34 @@ TEST( Line, intersection )
 
 	ASSERT_EQ(p.intersection(u), I);
 }
+
+
+TEST(Line, nearestVectorOnLine)
+{
+	Vector A(0, 0);
+	Vector B(1, 1);
+
+	Vector C(1, 3);
+	Vector N(2, 2);
+
+	Line p{A, B};
+
+	ASSERT_EQ(p.nearestVectorOnLine(C), N);
+}
+
+TEST(Line, nearestVectorOnLineSegment)
+{
+	Vector A(0, 0);
+	Vector B(1, 1);
+
+	Vector C(1, 3);
+	Vector N(1, 1);
+
+	Vector X(0, 1);
+	Vector Q(0.5, 0.5);
+
+	Line p{A, B};
+
+	ASSERT_EQ(p.nearestVectorOnLineSegment(C), N);
+	ASSERT_EQ(p.nearestVectorOnLineSegment(X), Q);
+}
