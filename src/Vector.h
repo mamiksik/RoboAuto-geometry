@@ -93,8 +93,8 @@ public:
 		double ny = y - center.y;
 
 		return {
-				( nx * c + ny * s ) + center.x,
-				( -nx * s + ny * c ) + center.y
+				( nx * c - ny * s ) + center.x,
+				( nx * s + ny * c ) + center.y
 		};
 	}
 
