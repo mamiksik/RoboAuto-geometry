@@ -16,7 +16,8 @@ TEST( Line, distance )
 	Vector C( 1, 1 );
 
 	Line p{ A, B };
-	ASSERT_NEAR( p.distance( C ), 1.41421 / 2, PRECISION );
+	double i = p.distance( C );
+	ASSERT_NEAR( p.distance( C ), 1.41421 / 2, PRECISION ) << p.distance( C );
 }
 
 
@@ -108,8 +109,31 @@ TEST( Line, nearestVectorOnLineSegment )
 
 	Line p{ A, B };
 
+
+	Vector K( 1, 0 );
+	Vector L( 0, 1 );
+
+	Vector Y( 0, 2 );
+
+	Line u{ K, L };
+
+
+	Vector S( 0, 0 );
+	Vector D( 1, 0 );
+
+	Vector Z( 0.5, 1 );
+	Vector SDC( 0.5, 0 );
+
+	Line s{ S, D };
+	Line d{ D, S };
+
 	ASSERT_EQ( p.nearestVectorOnLineSegment( C ), N );
 	ASSERT_EQ( p.nearestVectorOnLineSegment( X ), Q );
+
+	ASSERT_EQ( u.nearestVectorOnLineSegment( Y ), L );
+
+	ASSERT_EQ( s.nearestVectorOnLineSegment( Z ), SDC );
+	ASSERT_EQ( d.nearestVectorOnLineSegment( Z ), SDC );
 }
 
 
@@ -118,7 +142,7 @@ TEST( Line, normalVector )
 	Vector A( 4, 2 );
 	Vector R( 4, -2 );
 
-	ASSERT_EQ( A, R );
+	ASSERT_EQ( A.normalVector(), R );
 }
 
 
@@ -141,7 +165,10 @@ TEST( Line, reverse )
 {
 	Vector A( 2, 4 );
 	Vector B( 4, 2 );
-	ASSERT_EQ( A, B );
+
+	Line p{ A, B };
+	Line r{ B, A };
+	ASSERT_EQ( p.reverse(), r );
 }
 
 
@@ -150,12 +177,12 @@ TEST( Line, segmentDistance )
 	Vector A( 1, 0 );
 	Vector B( 0, 1 );
 
-	Vector D( 0, 2 );
+	Vector Y( 0, 2 );
 	Vector O( -1, 2 );
 
 	Line p{ A, B };
 
-	ASSERT_NEAR( p.segmentDistance( D ), 1, PRECISION );
+	ASSERT_NEAR( p.segmentDistance( Y ), 1, PRECISION );
 	ASSERT_NEAR( p.segmentDistance( O ), 1.4142171, PRECISION );
 }
 

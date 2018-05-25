@@ -28,13 +28,13 @@ public:
 
 
 	//TODO: Check
-	double angleWith( Vector & vector )
+	double angleWith( Vector& vector )
 	{
 		return abs( alpha() - vector.alpha() );
 	}
 
 
-	double crossProduct( Vector & vector )
+	double crossProduct( Vector& vector )
 	{
 		return x * vector.y - y * vector.x;
 	}
@@ -66,22 +66,28 @@ public:
 	}
 
 
-	Vector rotate( double radian )
+	Vector normalVector( )
 	{
-		double s = sin( radian );
-		double c = cos( radian );
-
-		return {
-				x * c + y * s,
-				-x * s + y * c
-		};
+		return { x, -y };
 	}
 
 
-	Vector rotate( float radian, Vector center )
+//	Vector rotate( double radian )
+//	{
+//		double s = sin( radian );
+//		double c = cos( radian );
+//
+//		return {
+//				x * c + y * s,
+//				-x * s + y * c
+//		};
+//	}
+
+
+	Vector rotate( double radian, Vector center = { 0, 0 } )
 	{
-		float s = sin( radian );
-		float c = cos( radian );
+		double s = sin( radian );
+		double c = cos( radian );
 
 		double nx = x - center.x;
 		double ny = y - center.y;

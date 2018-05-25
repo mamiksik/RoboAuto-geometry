@@ -13,7 +13,7 @@ template < int size >
 class Polygon : public Drawable
 {
 public:
-	Polygon( std::array < Vector, size > & _points ) : vectors{ _points }, maxX( vectors[ 0 ].x )
+	Polygon( std::array < Vector, size > & _points ) : vectors{ _points }, maxX( _points[ 0 ].x )
 	{
 		for ( int i = 1; i < vectors.size(); ++i ) {
 			if ( vectors[ i ].x > maxX ) maxX = vectors[ i ].x;
@@ -86,11 +86,11 @@ public:
 	}
 
 
-	Polygon < size > rotate( float angle, Vector point )
+	Polygon < size > rotate( double angle, Vector vector = Vector{0, 0} )
 	{
 		std::array < Vector, size > rotatedPoints = vectors;
 		for ( int i = 0; i < vectors.size(); ++i ) {
-			rotatedPoints[ i ] = vectors[ i ].rotate( angle, point );
+			rotatedPoints[ i ] = vectors[ i ].rotate( angle, vector );
 		}
 
 		return Polygon < size >( rotatedPoints );

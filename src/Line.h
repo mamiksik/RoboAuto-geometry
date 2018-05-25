@@ -13,17 +13,19 @@
 class Line : public Drawable
 {
 public:
-	Line( Vector & _from, Vector & _to, bool _infinite = false ) : from( _from ),
-	                                                               to( _to ),
-	                                                               a( from.y - to.y ),
-	                                                               b( to.x - from.x ),
-	                                                               c( -b * from.y + -a * from.x ),
-	                                                               infinite( _infinite ) { };
+	Line( Vector& _from, Vector& _to, bool _infinite = false ) : from( _from ),
+	                                                             to( _to ),
+	                                                             a( _from.y - _to.y ),
+	                                                             b( _to.x - _from.x ),
+	                                                             c( -b * _from.y + -a * _from.x ),
+	                                                             infinite( _infinite ) { };
 
 
 	double distance( Vector vector )
 	{
-		return abs( a * vector.x + b * vector.y + c ) / sqrt( pow( a, 2 ) + pow( b, 2 ) );
+		double d = sqrt( a * a + b * b );
+		double d1 = abs( a * vector.x + b * vector.y + c );
+		return d1 / d;
 	};
 
 
@@ -94,7 +96,7 @@ public:
 	}
 
 
-	Vector nearestVectorOnLine( Vector & vector )
+	Vector nearestVectorOnLine( Vector& vector )
 	{
 		double x = ( -a * b * vector.y + b * b * vector.x - a * c ) / ( b * b + a * a );
 		double y = ( a * a * vector.y - a * b * vector.x - b * c ) / ( b * b + a * a );
@@ -103,7 +105,7 @@ public:
 	}
 
 
-	Vector nearestVectorOnLineSegment( Vector & vector )
+	Vector nearestVectorOnLineSegment( Vector& vector )
 	{
 		Vector nearest = nearestVectorOnLine( vector );
 		Line p = { nearest, vector };
@@ -111,29 +113,19 @@ public:
 		auto oFrom = p.orientation( from );
 		auto oTo = p.orientation( to );
 
-		if ( oFrom == oTo && oTo == Orientation::clockWise ) {
-			return from;
-		} else if ( oFrom == oTo && oTo == Orientation::counterClockWise ) {
-			return to;
-		} else {
+
+		if (oFrom != oTo || vector.distance(from) == vector.distance(to)){
 			return nearest;
+		} else if (vector.distance(from) < vector.distance(to)){
+			return from;
+		} else {
+			return to;
 		}
 	}
 
-
-	Vector normalVector( )
-	{
-		return { x, -y };
-	}
-
-
 	bool onSegment( Vector v )
 	{
-		return to.x <= std::max( from.x, v.x ) &&
-		       to.x >= std::min( from.x, v.x ) &&
-		       to.y <= std::max( from.y, v.y ) &&
-		       to.y >= std::min( from.y, v.y );
-
+		return segmentDistance(v) == 0;
 	}
 
 
@@ -143,12 +135,24 @@ public:
 	}
 
 
-	double segmentDistance( Vector & vector )
+	double segmentDistance( Vector vector )
 	{
-		Vector diff = vector - nearestVectorOnLineSegment( vector );
+		const Vector segment = nearestVectorOnLineSegment( vector );
+		Vector diff = vector - segment;
 		return diff.length();
 	}
 
+
+	bool operator==( Line line ) const
+	{
+		return to == line.to && from == line.from;
+	}
+
+
+	bool operator!=( Line line ) const
+	{
+		return to != line.to || from != line.from;
+	}
 
 
 //	std::string operator+(std::string ss)
@@ -180,12 +184,15 @@ private:
 	}
 
 
+
+
+	Vector from;
+	Vector to;
+
 	double a;
 	double b;
 	double c;
 
-	Vector from;
-	Vector to;
 
 	bool infinite;
 };

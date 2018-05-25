@@ -72,11 +72,9 @@ TEST( Vector, lenght )
 TEST( Vector, rotate )
 {
 	Vector A{ 1, 0 };
-	Vector C{ 0, 0 };
-
+	
 	Vector D = A.rotate( M_PI );
-
-
+	
 	ASSERT_NEAR( -1, D.x, PRECISION );
 	ASSERT_NEAR( 0, D.y, PRECISION );
 }
