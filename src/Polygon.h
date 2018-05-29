@@ -13,7 +13,7 @@ template < int size >
 class Polygon : public Drawable
 {
 public:
-	Polygon( std::array < Vector, size > & _points ) : vectors{ _points }, maxX( _points[ 0 ].x )
+	Polygon( std::array < Vector, size >& _points ) : vectors{ _points }, maxX( _points[ 0 ].x )
 	{
 		for ( int i = 1; i < vectors.size(); ++i ) {
 			if ( vectors[ i ].x > maxX ) maxX = vectors[ i ].x;
@@ -47,46 +47,27 @@ public:
 	}
 
 
-	double distance( Vector vector )
+	template < class T >
+	double distance( T& object )
 	{
-		Line line = Line( vectors[ vectors.size() - 1 ], vectors[ 0 ] );
-		double distance = line.distance( vector );
-
-		for ( int i = 0; i < vectors.size() - 1; ++i ) {
-
-			line = Line( vectors[ i ], vectors[ i + 1 ] );
-
-			double d = line.distance( vector );
-
-			if ( d < distance ) {
-				distance = d;
-			}
-		}
-
-		return distance;
-	};
+		return GeometryMath::distance( * this, object );
+	}
 
 
 	QAbstractSeries *draw( std::string name ) override
 	{
 		auto *lineSeries = new QLineSeries();
-		for ( int i = 0; i < getVectors().size(); ++i ) {
-			lineSeries->append( getVectors()[ i ].x, getVectors()[ i ].y );
+		for ( int i = 0; i < vectors.size(); ++i ) {
+			lineSeries->append( vectors[ i ].x, vectors[ i ].y );
 		}
 
-		lineSeries->append( getVectors()[ 0 ].x, getVectors()[ 0 ].y );
+		lineSeries->append( vectors[ 0 ].x, vectors[ 0 ].y );
 		lineSeries->setName( name.c_str() );
 		return lineSeries;
 	}
 
 
-	std::array < Vector, size > getVectors( )
-	{
-		return vectors;
-	}
-
-
-	Polygon < size > rotate( double angle, Vector vector = Vector{0, 0} )
+	Polygon < size > rotate( double angle, Vector vector = Vector{ 0, 0 } )
 	{
 		std::array < Vector, size > rotatedPoints = vectors;
 		for ( int i = 0; i < vectors.size(); ++i ) {
@@ -97,7 +78,6 @@ public:
 	}
 
 
-private:
-	double maxX;
 	std::array < Vector, size > vectors;
+	double maxX;
 };

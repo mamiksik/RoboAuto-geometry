@@ -2,6 +2,7 @@
 #include "Vector.h"
 #include "Line.h"
 #include "Polygon.h"
+#include "Circle.h"
 #include "Drawer.h"
 
 #include <QtCharts>
@@ -97,7 +98,7 @@ int main( int argc, char *argv[] )
 
 //	Drawer::draw(p, "p");
 
-	Drawer::show();
+//	Drawer::show();
 
 	return application.exec();
 

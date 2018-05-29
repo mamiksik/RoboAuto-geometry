@@ -9,10 +9,19 @@
 #include <QScatterSeries>
 #include "Drawable.h"
 
+#ifndef PRECISION
+#define PRECISION 0.0001
+#endif
+
 enum Axe
 {
 	x = 0,
 	y,
+};
+
+namespace GeometryMath {
+	template <class T1, class T2>
+	double distance(T1&, T2&);
 };
 
 class Vector : public Drawable
@@ -40,11 +49,11 @@ public:
 	}
 
 
-	double distance( Vector vector )
+	template < class T >
+	double distance( T& object )
 	{
-		return sqrt( pow( vector.x - x, 2 ) + pow( vector.y - y, 2 ) );
+		return GeometryMath::distance(*this, object);
 	}
-
 
 	QAbstractSeries *draw( std::string name ) override
 	{
@@ -70,19 +79,6 @@ public:
 	{
 		return { x, -y };
 	}
-
-
-//	Vector rotate( double radian )
-//	{
-//		double s = sin( radian );
-//		double c = cos( radian );
-//
-//		return {
-//				x * c + y * s,
-//				-x * s + y * c
-//		};
-//	}
-
 
 	Vector rotate( double radian, Vector center = { 0, 0 } )
 	{

@@ -6,6 +6,7 @@
 
 #include "Drawable.h"
 #include "Vector.h"
+#include "Polygon.h"
 #include "Line.h"
 
 #include <cmath>
@@ -16,34 +17,27 @@ public:
 	Circle( double _radius, Vector& _center ) : radius( _radius ), center( _center ) { };
 
 
+//	template <class T>
 	bool contains( Vector vector )
 	{
 		return distance( vector ) <= radius;
 	}
 
 
-	double distance( Vector vector )
+	template < class T >
+	double distance( T& object )
 	{
-		Vector d = ( vector - center );
-		return d.length();
+		return GeometryMath::distance( * this, object );
 	}
 
-
-	bool intersect( Line ray )
+	bool intersect( Line line )
 	{
-		return contains( ray.nearestVectorOnLine( center ) );
+		return contains( line.nearestVector( center ) );
 	}
-
-
-	bool intersectLineSegment( Line lineSegment )
-	{
-		return contains( lineSegment.nearestVectorOnLineSegment( center ) );
-	}
-
 
 	std::vector < Vector > intersection( Line l )
 	{
-		Vector nearest = l.nearestVectorOnLine( center );
+		Vector nearest = l.nearestVector( center );
 		double d = distance( nearest ); //lec
 		std::vector < Vector > solutions = { };
 
@@ -59,8 +53,14 @@ public:
 			Vector inter1 = ( l.direction() * ( t - dt ) ) + l.from;
 			Vector inter2 = ( l.direction() * ( t + dt ) ) + l.from;
 
-			solutions.push_back( inter1 );
-			solutions.push_back( inter2 );
+
+			if (l.onSegment(inter1)) {
+				solutions.push_back( inter1 );
+			}
+
+			if (l.onSegment(inter2)) {
+				solutions.push_back( inter2 );
+			}
 
 		}
 

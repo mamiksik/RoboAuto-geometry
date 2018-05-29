@@ -27,12 +27,11 @@ public:
 	}
 
 
-	double distance( Vector vector )
+	template < class T >
+	double distance( T& object )
 	{
-		double d = sqrt( a * a + b * b );
-		double d1 = abs( a * vector.x + b * vector.y + c );
-		return d1 / d;
-	};
+		return GeometryMath::distance( * this, object );
+	}
 
 
 	QAbstractSeries *draw( std::string name ) override
@@ -85,7 +84,9 @@ public:
 
 	Vector intersection( Line line )
 	{
-		if ( ( !infinite && !intersect( line ) ) || isParaller( line ) ) {
+		//TODO: Line line is infinite?
+		if ( ( ( !infinite && !intersect( line ) ) && ( !line.infinite && !line.intersect( Line{ from, to } ) ) ) ||
+		     isParaller( line ) ) {
 			//TODO: Exception
 			throw std::invalid_argument( "Lines do not intersect" );
 		}
@@ -94,6 +95,12 @@ public:
 		double y = ( line.a * c - a * line.c ) / ( a * line.b - line.a - b );
 
 		return { x, y };
+	}
+
+
+	Vector nearestVector( Vector& vector )
+	{
+		return infinite ? nearestVectorOnLine( vector ) : nearestVectorOnLineSegment( vector );
 	}
 
 
@@ -109,37 +116,10 @@ public:
 	}
 
 
-	Vector nearestVectorOnLine( Vector& vector )
-	{
-		double x = ( -a * b * vector.y + b * b * vector.x - a * c ) / ( b * b + a * a );
-		double y = ( a * a * vector.y - a * b * vector.x - b * c ) / ( b * b + a * a );
-
-		return { x, y };
-	}
-
-
-	Vector nearestVectorOnLineSegment( Vector& vector )
-	{
-		Vector nearest = nearestVectorOnLine( vector );
-		Line p = { nearest, vector };
-
-		auto oFrom = p.orientation( from );
-		auto oTo = p.orientation( to );
-
-
-		if ( oFrom != oTo || vector.distance( from ) == vector.distance( to ) ) {
-			return nearest;
-		} else if ( vector.distance( from ) < vector.distance( to ) ) {
-			return from;
-		} else {
-			return to;
-		}
-	}
-
-
 	bool onSegment( Vector v )
 	{
-		return segmentDistance( v ) == 0;
+		//TODO: Near float
+		return segmentDistance( v ) < PRECISION;
 	}
 
 
@@ -169,17 +149,14 @@ public:
 	}
 
 
-//	std::string operator+(std::string ss)
-//	{
-//		return from + " - " + to + ss;
-//	}
-
-//	operator std::string() const{
-//		return from + " - " + to;
-//	}
-
 	Vector from;
 	Vector to;
+
+	double a;
+	double b;
+	double c;
+
+	bool infinite;
 
 private:
 
@@ -200,10 +177,35 @@ private:
 	}
 
 
-	double a;
-	double b;
-	double c;
+	Vector nearestVectorOnLine( Vector& vector )
+	{
+		double x = ( -a * b * vector.y + b * b * vector.x - a * c ) / ( b * b + a * a );
+		double y = ( a * a * vector.y - a * b * vector.x - b * c ) / ( b * b + a * a );
+
+		return { x, y };
+	}
 
 
-	bool infinite;
+	Vector nearestVectorOnLineSegment( Vector& vector )
+	{
+		Vector nearest = nearestVectorOnLine( vector );
+
+		if (nearest == vector && (nearest - to).length() < lenght() && (nearest - from).length() < lenght()){
+			 return nearest;
+		}
+
+		Line p = { nearest, vector };
+
+		auto oFrom = p.orientation( from );
+		auto oTo = p.orientation( to );
+
+
+		if ( oFrom != oTo || vector.distance( from ) == vector.distance( to )) {
+			return nearest;
+		} else if ( vector.distance( from ) < vector.distance( to ) ) {
+			return from;
+		} else {
+			return to;
+		}
+	}
 };
