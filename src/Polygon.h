@@ -7,6 +7,7 @@
 #include <array>
 #include <iostream>
 
+#include "Vector.h"
 #include "Line.h"
 
 template < int size >
@@ -21,29 +22,29 @@ public:
 	}
 
 
-	bool contains( Vector point )
+	template < int newSize = size + 1 >
+	Polygon < newSize > addVector( Vector v, int index = size )
 	{
-		double x = point.x;
-		double y = point.y;
+		std::array < Vector, newSize > newVectors;
 
-		bool inside = false;
-		int count = 0;
-
-		Vector rayEnd( maxX + 1, point.y );
-
-		Line ray{ point, rayEnd };
-
-		Line line{ vectors[ vectors.size() - 1 ], vectors[ 0 ] };
-		if ( line.intersect( ray ) ) count++;
-
-		for ( int i = 0; i < vectors.size() - 1; ++i ) {
-
-			line = Line{ vectors[ i ], vectors[ i + 1 ] };
-
-			if ( line.intersect( ray ) ) count++;
+		for ( int i = 0; i < newSize; ++i ) {
+			if ( i == index ) {
+				newVectors[ i ] = v;
+			} else if ( i > index ) {
+				newVectors[ i ] = vectors[ i - 1 ];
+			} else {
+				newVectors[ i ] = vectors[ i ];
+			}
 		}
 
-		return count % 2 != 0;
+		return Polygon < newSize >( newVectors );
+	}
+
+
+	template < class T >
+	bool contains( T& object )
+	{
+		return GeometryMath::contains( * this, object );
 	}
 
 

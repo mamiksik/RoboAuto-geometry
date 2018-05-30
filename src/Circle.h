@@ -17,12 +17,11 @@ public:
 	Circle( double _radius, Vector& _center ) : radius( _radius ), center( _center ) { };
 
 
-//	template <class T>
-	bool contains( Vector vector )
+	template < class T >
+	bool contains( T& object )
 	{
-		return distance( vector ) <= radius;
+		return GeometryMath::contains( * this, object );
 	}
-
 
 	template < class T >
 	double distance( T& object )
@@ -32,7 +31,8 @@ public:
 
 	bool intersect( Line line )
 	{
-		return contains( line.nearestVector( center ) );
+		auto v = line.nearestVector( center );
+		return contains( v );
 	}
 
 	std::vector < Vector > intersection( Line l )

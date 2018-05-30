@@ -22,12 +22,16 @@ enum Axe
 namespace GeometryMath {
 	template <class T1, class T2>
 	double distance(T1&, T2&);
+
+	template <class T1, class T2>
+	bool contains(T1&, T2&);
 };
 
 class Vector : public Drawable
 {
 public:
-	Vector( double _x, double _y ) : x( _x ), y( _y ) { };
+	Vector( double _x, double _y ) : x( _x ), y( _y ) {};
+	Vector(): x(0), y(0) {};
 
 
 	double alpha( )

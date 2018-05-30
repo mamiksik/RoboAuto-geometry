@@ -169,4 +169,124 @@ namespace GeometryMath {
 		return distance( v, c );
 	}
 
+
+	//
+	// Polygon contains ...
+	//
+
+
+	template < int size >
+	bool contains( Polygon < size >& p, Vector& v )
+	{
+
+//		double x = v.x;
+//		double y = v.y;
+
+		int count = 0;
+
+		Vector rayEnd( p.maxX + 1, v.y );
+
+		Line ray{ v, rayEnd };
+
+		Line line{ p.vectors[ p.vectors.size() - 1 ], p.vectors[ 0 ] };
+		if ( line.intersect( ray ) ) count++;
+
+		for ( int i = 0; i < p.vectors.size() - 1; ++i ) {
+
+			line = Line{ p.vectors[ i ], p.vectors[ i + 1 ] };
+
+			if ( line.intersect( ray ) ) count++;
+		}
+
+		return count % 2 != 0;
+	}
+
+
+	template < int size >
+	bool contains( Polygon < size >& p, Line& l )
+	{
+		return !l.infinite && contains( p, l.from ) && contains( p, l.to );
+	}
+
+
+	template < int size1, int size2 >
+	bool contains( Polygon < size1 >& p1, Polygon < size2 >& p2 )
+	{
+		for ( Vector v: p2.vectors ) {
+			if ( !contains( p1, v ) ) {
+				return false;
+			}
+		}
+
+		return true;
+
+	}
+
+
+	template < int size >
+	bool contains( Polygon < size >& p, Circle& c )
+	{
+		int count = 0;
+		Line l{ p.vectors[ p.vectors.size() - 1 ], p.vectors[ 0 ] };
+		if ( c.intersect( l ) ) count++;
+
+		for ( int i = 0; i < p.vectors.size() - 1; ++i ) {
+
+			l = Line{ p.vectors[ i ], p.vectors[ i + 1 ] };
+
+			if ( c.intersect( l ) ) count++;
+		}
+
+		return count == 0 && contains( p, c.center );
+	}
+
+	//
+	// Circle contains ...
+	//
+
+
+	template <>
+	bool contains( Circle& c, Vector& v )
+	{
+
+		return distance( c, v ) <= c.radius;
+	}
+
+
+	template <>
+	bool contains( Circle& c, Line& l )
+	{
+		return !l.infinite && contains( c, l.from ) && contains( c, l.to );
+	}
+
+
+	template <>
+	bool contains( Circle& p1, Circle& p2 )
+	{
+		return distance( p1, p2 ) + p2.radius < p1.radius;
+	}
+
+
+	template < int size >
+	bool contains( Circle& c, Polygon < size >& p )
+	{
+		int count = 0;
+		Line l{ p.vectors[ p.vectors.size() - 1 ], p.vectors[ 0 ] };
+		if ( c.intersect( l ) ) count++;
+
+		for ( int i = 0; i < p.vectors.size() - 1; ++i ) {
+
+			l = Line{ p.vectors[ i ], p.vectors[ i + 1 ] };
+
+			if ( c.intersect( l ) ) count++;
+		}
+
+		for ( auto vec : p.vectors ) {
+			if ( !c.contains( vec ) ) count++;
+		}
+
+		return count == 0;
+	}
+
+
 };

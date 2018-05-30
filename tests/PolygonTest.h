@@ -32,6 +32,8 @@ TEST( Polygon, contains )
 	Polygon < 4 > o( point );
 	Polygon < 6 > l( pointl );
 
+	ASSERT_EQ( o.distance( B ), 2);
+
 	ASSERT_EQ( o.contains( B ), false );
 	ASSERT_EQ( o.contains( F ), true );
 	ASSERT_EQ( l.contains( F ), false );
