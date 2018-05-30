@@ -4,11 +4,11 @@
 
 #pragma once
 
+#ifdef QT_DRAW
 #include <QtCharts>
 #include "Drawable.h"
-
 using namespace QtCharts;
-
+#endif
 
 class Drawer
 {

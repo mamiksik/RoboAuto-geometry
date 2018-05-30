@@ -10,10 +10,10 @@
 #include "Vector.h"
 
 
-class Line : public Drawable
+class Line : public Drawable, GeometryMath::DistanceTrait
 {
 public:
-	Line( Vector& _from, Vector& _to, bool _infinite = false ) : from( _from ),
+	Line( const Vector& _from, const Vector& _to, bool _infinite = false ) : from( _from ),
 	                                                             to( _to ),
 	                                                             a( _from.y - _to.y ),
 	                                                             b( _to.x - _from.x ),
@@ -21,17 +21,11 @@ public:
 	                                                             infinite( _infinite ) { };
 
 
-	Vector direction( )
+	Vector direction( ) const
 	{
 		return ( to - from ) / lenght();
 	}
 
-
-	template < class T >
-	double distance( T& object )
-	{
-		return GeometryMath::distance( * this, object );
-	}
 
 #ifdef QT_DRAW
 	QAbstractSeries *draw( std::string name ) override
@@ -45,14 +39,15 @@ public:
 	}
 #endif
 
+
 	//TODO: Tests
-	double lenght( )
+	double lenght( ) const
 	{
 		return from.distance( to );
 	}
 
 
-	bool intersect( Line line )
+	bool intersect( const Line& line ) const
 	{
 		Orientation o1 = orientation( line.from );
 		Orientation o2 = orientation( line.to );
@@ -82,7 +77,7 @@ public:
 	}
 
 
-	Vector intersection( Line line )
+	Vector intersection( const Line& line )
 	{
 		//TODO: Line line is infinite?
 		if ( ( ( !infinite && !intersect( line ) ) && ( !line.infinite && !line.intersect( Line{ from, to } ) ) ) ||
@@ -98,25 +93,25 @@ public:
 	}
 
 
-	Vector nearestVector( Vector& vector )
+	Vector nearestVector( const Vector& vector )
 	{
 		return infinite ? nearestVectorOnLine( vector ) : nearestVectorOnLineSegment( vector );
 	}
 
 
-	bool isParaller( Line line )
+	bool isParaller( const Line& line ) const
 	{
 		return ( -a / b ) == ( -line.a / b );
 	}
 
 
-	bool isPerpendicular( Line line )
+	bool isPerpendicular( const Line& line ) const
 	{
 		return ( -a / b ) * ( -line.a / b ) == -1;
 	}
 
 
-	bool onSegment( Vector v )
+	bool onSegment( const Vector& v ) const
 	{
 		//TODO: Near float
 		return segmentDistance( v ) < PRECISION;
@@ -129,7 +124,7 @@ public:
 	}
 
 
-	double segmentDistance( Vector vector )
+	double segmentDistance( const Vector& vector ) const
 	{
 		const Vector segment = nearestVectorOnLineSegment( vector );
 		Vector diff = vector - segment;
@@ -137,13 +132,13 @@ public:
 	}
 
 
-	bool operator==( Line line ) const
+	bool operator==( const Line& line ) const
 	{
 		return to == line.to && from == line.from;
 	}
 
 
-	bool operator!=( Line line ) const
+	bool operator!=( const Line& line ) const
 	{
 		return to != line.to || from != line.from;
 	}
@@ -168,7 +163,7 @@ private:
 	};
 
 
-	Orientation orientation( Vector v )
+	Orientation orientation( const Vector& v ) const
 	{
 		double val = ( ( to.y - from.y ) * ( v.x - to.x ) ) - ( ( to.x - from.x ) * ( v.y - to.y ) );
 		if ( val == 0 ) return Orientation::collinear;
@@ -177,7 +172,7 @@ private:
 	}
 
 
-	Vector nearestVectorOnLine( Vector& vector )
+	Vector nearestVectorOnLine( const Vector& vector )
 	{
 		double x = ( -a * b * vector.y + b * b * vector.x - a * c ) / ( b * b + a * a );
 		double y = ( a * a * vector.y - a * b * vector.x - b * c ) / ( b * b + a * a );
@@ -186,12 +181,12 @@ private:
 	}
 
 
-	Vector nearestVectorOnLineSegment( Vector& vector )
+	Vector nearestVectorOnLineSegment( const Vector& vector )
 	{
 		Vector nearest = nearestVectorOnLine( vector );
 
-		if (nearest == vector && (nearest - to).length() < lenght() && (nearest - from).length() < lenght()){
-			 return nearest;
+		if ( nearest == vector && ( nearest - to ).length() < lenght() && ( nearest - from ).length() < lenght() ) {
+			return nearest;
 		}
 
 		Line p = { nearest, vector };
@@ -200,7 +195,7 @@ private:
 		auto oTo = p.orientation( to );
 
 
-		if ( oFrom != oTo || vector.distance( from ) == vector.distance( to )) {
+		if ( oFrom != oTo || vector.distance( from ) == vector.distance( to ) ) {
 			return nearest;
 		} else if ( vector.distance( from ) < vector.distance( to ) ) {
 			return from;

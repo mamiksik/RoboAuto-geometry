@@ -19,15 +19,15 @@ namespace GeometryMath {
 	template <>
 	double distance( Vector& v1, Vector& v2 )
 	{
-		return sqrt( pow( v1.x - v2.x, 2 ) + pow( v1.y - v2.y, 2 ) );
+		return std::sqrt( pow( v1.x - v2.x, 2 ) + pow( v1.y - v2.y, 2 ) );
 	}
 
 
 	template <>
 	double distance( Vector& v, Line& l )
 	{
-		double d = sqrt( l.a * l.a + l.b * l.b );
-		double d1 = abs( l.a * v.x + l.b * v.y + l.c );
+		double d = std::sqrt( l.a * l.a + l.b * l.b );
+		double d1 = std::abs( l.a * v.x + l.b * v.y + l.c );
 		return d1 / d;
 	}
 
@@ -56,7 +56,7 @@ namespace GeometryMath {
 	template <>
 	double distance( Vector& v, Circle& c )
 	{
-		Vector d = ( v - c.center );
+		auto d = ( v - c.center );
 		return d.length();
 	}
 
@@ -99,7 +99,7 @@ namespace GeometryMath {
 	template < int size >
 	double distance( Polygon < size >& p, Vector& v )
 	{
-		Line line = Line( p.vectors[ p.vectors.size() - 1 ], p.vectors[ 0 ] );
+		Line line{ p.vectors[ p.vectors.size() - 1 ], p.vectors[ 0 ] };
 		double distance = line.distance( v );
 
 		for ( int i = 0; i < p.vectors.size() - 1; ++i ) {
@@ -108,9 +108,10 @@ namespace GeometryMath {
 
 			double d = line.distance( v );
 
-			if ( d < distance ) {
-				distance = d;
-			}
+//			if ( d < distance ) {
+//				distance = d;
+//			}
+			distance = std::min( d, distance );
 		}
 
 		return distance;
@@ -189,13 +190,12 @@ namespace GeometryMath {
 		Line ray{ v, rayEnd };
 
 		Line line{ p.vectors[ p.vectors.size() - 1 ], p.vectors[ 0 ] };
-		if ( line.intersect( ray ) ) count++;
+		count += line.intersect( ray );
 
 		for ( int i = 0; i < p.vectors.size() - 1; ++i ) {
 
 			line = Line{ p.vectors[ i ], p.vectors[ i + 1 ] };
-
-			if ( line.intersect( ray ) ) count++;
+			count += line.intersect( ray );
 		}
 
 		return count % 2 != 0;
@@ -228,13 +228,13 @@ namespace GeometryMath {
 	{
 		int count = 0;
 		Line l{ p.vectors[ p.vectors.size() - 1 ], p.vectors[ 0 ] };
-		if ( c.intersect( l ) ) count++;
+		count += c.intersect( l );
 
 		for ( int i = 0; i < p.vectors.size() - 1; ++i ) {
 
 			l = Line{ p.vectors[ i ], p.vectors[ i + 1 ] };
 
-			if ( c.intersect( l ) ) count++;
+			count += c.intersect( l );
 		}
 
 		return count == 0 && contains( p, c.center );
@@ -272,17 +272,17 @@ namespace GeometryMath {
 	{
 		int count = 0;
 		Line l{ p.vectors[ p.vectors.size() - 1 ], p.vectors[ 0 ] };
-		if ( c.intersect( l ) ) count++;
+		count += c.intersect( l );
 
 		for ( int i = 0; i < p.vectors.size() - 1; ++i ) {
 
 			l = Line{ p.vectors[ i ], p.vectors[ i + 1 ] };
 
-			if ( c.intersect( l ) ) count++;
+			count += c.intersect( l );
 		}
 
 		for ( auto vec : p.vectors ) {
-			if ( !c.contains( vec ) ) count++;
+			count += !c.intersect( l );
 		}
 
 		return count == 0;

@@ -16,8 +16,9 @@ using namespace QtCharts;
 
 int main( int argc, char *argv[] )
 {
+#ifdef QT_DRAW
 	QApplication application( argc, argv );
-
+#endif
 	Vector O{ 0, 0 };
 
 	Vector A{ 1, 1 };
@@ -55,11 +56,10 @@ int main( int argc, char *argv[] )
 
 //	Drawer::draw(o, "o");
 //	Drawer::draw(l,"l");
+#ifdef QT_DRAW
 	Drawer::draw(pol, "pol");
-
 	Drawer::show();
-
 	return application.exec();
-
+#endif
 }
 

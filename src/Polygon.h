@@ -11,7 +11,7 @@
 #include "Line.h"
 
 template < int size >
-class Polygon : public Drawable
+class Polygon : public Drawable, GeometryMath::DistanceTrait, GeometryMath::ContainsTrait
 {
 public:
 	Polygon( std::array < Vector, size >& _points ) : vectors{ _points }, maxX( _points[ 0 ].x )
@@ -23,7 +23,7 @@ public:
 
 
 	template < int newSize = size + 1 >
-	Polygon < newSize > addVector( Vector v, int index = size )
+	Polygon < newSize > addVector( const Vector& v, int index = size )
 	{
 		std::array < Vector, newSize > newVectors;
 
@@ -41,18 +41,19 @@ public:
 	}
 
 
-	template < class T >
-	bool contains( T& object )
+	/*template < class T >
+	bool contains( T& object ) const
 	{
 		return GeometryMath::contains( * this, object );
 	}
 
 
 	template < class T >
-	double distance( T& object )
+	double distance( T& object ) const
 	{
 		return GeometryMath::distance( * this, object );
-	}
+	}*/
+
 
 #ifdef QT_DRAW
 	QAbstractSeries *draw( std::string name ) override
@@ -68,7 +69,8 @@ public:
 	}
 #endif
 
-	Polygon < size > rotate( double angle, Vector vector = Vector{ 0, 0 } )
+
+	Polygon < size > rotate( double angle, const Vector& vector = Vector{ 0, 0 } )
 	{
 		std::array < Vector, size > rotatedPoints = vectors;
 		for ( int i = 0; i < vectors.size(); ++i ) {

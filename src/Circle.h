@@ -8,25 +8,13 @@
 #include "Polygon.h"
 #include "Line.h"
 
+#include <vector>r
 #include <cmath>
 
-class Circle
+class Circle : public GeometryMath::DistanceTrait, GeometryMath::ContainsTrait
 {
 public:
 	Circle( double _radius, Vector& _center ) : radius( _radius ), center( _center ) { };
-
-
-	template < class T >
-	bool contains( T& object )
-	{
-		return GeometryMath::contains( * this, object );
-	}
-
-	template < class T >
-	double distance( T& object )
-	{
-		return GeometryMath::distance( * this, object );
-	}
 
 	bool intersect( Line line )
 	{

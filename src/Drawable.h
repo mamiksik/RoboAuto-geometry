@@ -3,10 +3,10 @@
 //
 #pragma once
 
+#ifdef QT_DRAW
 #include <QtCharts>
-
 using namespace QtCharts;
-
+#endif
 class Drawable
 {
 public:
