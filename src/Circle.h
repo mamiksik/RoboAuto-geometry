@@ -4,14 +4,13 @@
 
 #pragma once
 
-#include "Drawable.h"
 #include "Vector.h"
 #include "Polygon.h"
 #include "Line.h"
 
 #include <cmath>
 
-class Circle //: public Drawable
+class Circle
 {
 public:
 	Circle( double _radius, Vector& _center ) : radius( _radius ), center( _center ) { };

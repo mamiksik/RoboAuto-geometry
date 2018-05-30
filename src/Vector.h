@@ -6,8 +6,11 @@
 
 #include <cmath>
 #include <sstream>
-#include <QScatterSeries>
 #include "Drawable.h"
+
+#ifdef QT_DRAW
+#include <QScatterSeries>
+#endif
 
 #ifndef PRECISION
 #define PRECISION 0.0001
@@ -59,6 +62,7 @@ public:
 		return GeometryMath::distance(*this, object);
 	}
 
+#ifdef QT_DRAW
 	QAbstractSeries *draw( std::string name ) override
 	{
 		auto *point = new QScatterSeries();
@@ -71,6 +75,7 @@ public:
 
 		return point;
 	}
+#endif
 
 
 	double length( )

@@ -10,5 +10,7 @@ using namespace QtCharts;
 class Drawable
 {
 public:
+#ifdef QT_DRAW
 	virtual QAbstractSeries *draw( std::string name ) = 0;
+#endif
 };

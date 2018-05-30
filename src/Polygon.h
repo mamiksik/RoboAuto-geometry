@@ -54,7 +54,7 @@ public:
 		return GeometryMath::distance( * this, object );
 	}
 
-
+#ifdef QT_DRAW
 	QAbstractSeries *draw( std::string name ) override
 	{
 		auto *lineSeries = new QLineSeries();
@@ -66,7 +66,7 @@ public:
 		lineSeries->setName( name.c_str() );
 		return lineSeries;
 	}
-
+#endif
 
 	Polygon < size > rotate( double angle, Vector vector = Vector{ 0, 0 } )
 	{

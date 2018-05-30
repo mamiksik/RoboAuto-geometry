@@ -33,7 +33,7 @@ public:
 		return GeometryMath::distance( * this, object );
 	}
 
-
+#ifdef QT_DRAW
 	QAbstractSeries *draw( std::string name ) override
 	{
 		auto *series = new QLineSeries();
@@ -43,7 +43,7 @@ public:
 		series->setName( name.c_str() );
 		return series;
 	}
-
+#endif
 
 	//TODO: Tests
 	double lenght( )
