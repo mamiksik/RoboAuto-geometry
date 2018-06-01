@@ -11,6 +11,7 @@
 #include "Polygon.h"
 #include "Circle.h"
 
+using namespace Geometry;
 
 namespace GeometryMath {
 	//
@@ -242,6 +243,7 @@ namespace GeometryMath {
 			return GeometryMath::Container < Vector, Vector >::distance( c1.center, c1.center );
 		}
 
+
 		static bool contains( const Circle& p1, const Circle& p2 )
 		{
 			return distance( p1, p2 ) + p2.radius < p1.radius;
@@ -291,6 +293,7 @@ namespace GeometryMath {
 			return GeometryMath::Container < Polygon < size >, Circle >::distance( p, c );
 		}
 
+
 		static bool contains( const Circle& c, const Polygon < size >& p )
 		{
 			int count = 0;
@@ -311,149 +314,5 @@ namespace GeometryMath {
 			return count == 0;
 		}
 	};
-
-
-
-
-//
-// Polygon contains ...
-//
-
-
-	/*template < std::size_t size >
-	struct Container < Polygon < size >, Vector >
-	{
-		static bool contains( Polygon < size >& p, Vector& v )
-		{
-			int count = 0;
-
-			Vector rayEnd( p.maxX + 1, v.y );
-
-			Line ray{ v, rayEnd };
-
-			Line line{ p.vectors[ p.vectors.size() - 1 ], p.vectors[ 0 ] };
-			count += line.intersect( ray );
-
-			for ( int i = 0; i < p.vectors.size() - 1; ++i ) {
-
-				line = Line{ p.vectors[ i ], p.vectors[ i + 1 ] };
-				count += line.intersect( ray );
-			}
-
-			return count % 2 != 0;
-		}
-	};*/
-
-
-	/*template < std::size_t size >
-	struct Container < Polygon < size >, Line >
-	{
-		static bool contains( const Polygon < size >& p, const Line& l )
-		{
-			using GeometryMath::Container::contains;
-			return !l.infinite && contains( p, l.from ) && contains( p, l.to );
-		}
-	};*/
-
-
-	/*template < std::size_t size1, std::size_t size2 >
-	struct Container < Polygon < size1 >, Polygon < size2 > >
-	{
-		static bool contains( const Polygon < size1 >& p1, const Polygon < size2 >& p2 )
-		{
-			for ( Vector v: p2.vectors ) {
-				if ( !GeometryMath::Container::contains( p1, v ) ) {
-					return false;
-				}
-			}
-
-			return true;
-		}
-	};*/
-
-
-	/*template < std::size_t size >
-	struct Container < Polygon < size >, Circle >
-	{
-		static bool contains( const Polygon < size >& p, const Circle& c )
-		{
-			int count = 0;
-			Line l{ p.vectors[ p.vectors.size() - 1 ], p.vectors[ 0 ] };
-			count += c.intersect( l );
-
-			for ( int i = 0; i < p.vectors.size() - 1; ++i ) {
-
-				l = Line{ p.vectors[ i ], p.vectors[ i + 1 ] };
-
-				count += c.intersect( l );
-			}
-
-			return count == 0 && contains( p, c.center );
-		}
-	};*/
-
-//
-// Circle contains ...
-//
-
-
-	/*template <>
-	struct Container < Circle, Vector >
-	{
-		static bool contains( const Circle& c, const Vector& v )
-		{
-
-			return distance( c, v ) <= c.radius;
-		}
-	};*/
-
-
-/*
-	template <>
-	struct Container < Circle, Line >
-	{
-		static bool contains( const Circle& c, const Line& l )
-		{
-			using GeometryMath::Container::contains;
-			return !l.infinite && contains( c, l.from ) && contains( c, l.to );
-		}
-	};
-*/
-
-
-	/*template <>
-	struct Container < Circle, Circle >
-	{
-		static bool contains( Circle& p1, Circle& p2 )
-		{
-			return distance( p1, p2 ) + p2.radius < p1.radius;
-		}
-	};*/
-
-
-	/*template < std::size_t size >
-	struct Container < Circle, Polygon < size > >
-	{
-		bool contains( Circle& c, Polygon < size >& p )
-		{
-			int count = 0;
-			Line l{ p.vectors[ p.vectors.size() - 1 ], p.vectors[ 0 ] };
-			count += c.intersect( l );
-
-			for ( int i = 0; i < p.vectors.size() - 1; ++i ) {
-
-				l = Line{ p.vectors[ i ], p.vectors[ i + 1 ] };
-
-				count += c.intersect( l );
-			}
-
-			for ( auto vec : p.vectors ) {
-				count += !c.intersect( l );
-			}
-
-			return count == 0;
-		}
-	};*/
-
 
 };

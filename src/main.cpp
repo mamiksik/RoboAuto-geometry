@@ -13,6 +13,7 @@
 using namespace QtCharts;
 #endif
 
+using namespace Geometry;
 
 int main( int argc, char *argv[] )
 {
