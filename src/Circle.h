@@ -8,15 +8,15 @@
 #include "Polygon.h"
 #include "Line.h"
 
-#include <vector>r
+#include <vector>
 #include <cmath>
 
-class Circle : public GeometryMath::DistanceTrait, GeometryMath::ContainsTrait
+class Circle : public GeometryMath::DistanceTrait<Circle>, public GeometryMath::ContainsTrait<Circle>
 {
 public:
 	Circle( double _radius, Vector& _center ) : radius( _radius ), center( _center ) { };
 
-	bool intersect( Line line )
+	bool intersect( Line line ) const
 	{
 		auto v = line.nearestVector( center );
 		return contains( v );

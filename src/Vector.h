@@ -24,11 +24,15 @@ enum Axe
 };
 
 
-class Vector : public Drawable, GeometryMath::DistanceTrait
+class Vector : public Drawable, public GeometryMath::DistanceTrait < Vector >
 {
 public:
-	Vector( double _x, double _y ) : x( _x ), y( _y ) {};
-	Vector(): x(0), y(0) {};
+	Vector( double _x, double _y ) : x( _x ), y( _y ) { };
+
+
+//	Vector( Vector& v ) : x( v.x ), y( v.y ) { };
+
+	Vector( ) : x( 0 ), y( 0 ) { };
 
 
 	double alpha( ) const
@@ -74,16 +78,17 @@ public:
 
 	double length( ) const
 	{
-		return std::sqrt( x*x + y*y );
+		return std::sqrt( x * x + y * y );
 	}
 
 
-	Vector normalVector( )
+	Vector normalVector( ) const
 	{
 		return { x, -y };
 	}
 
-	Vector rotate( double radian, const Vector& center = { 0, 0 } )
+
+	Vector rotate( double radian, const Vector& center = { 0, 0 } ) const
 	{
 		double s = std::sin( radian );
 		double c = std::cos( radian );
@@ -98,13 +103,13 @@ public:
 	}
 
 
-	bool operator==( Vector vector ) const
+	bool operator==( const Vector& vector ) const
 	{
 		return x == vector.x && y == vector.y;
 	}
 
 
-	bool operator!=( Vector vector ) const
+	bool operator!=( const Vector& vector ) const
 	{
 		return x != vector.x || y != vector.y;
 	}
@@ -116,25 +121,25 @@ public:
 	}
 
 
-	Vector operator+( Vector vector ) const
+	Vector operator+( const Vector& vector ) const
 	{
 		return { x + vector.x, y + vector.y };
 	}
 
 
-	double operator+( double i )
+	double operator+( double i ) const
 	{
 		return length() + i;
 	}
 
 
-	Vector operator-( Vector vector ) const
+	Vector operator-( const Vector& vector ) const
 	{
 		return { x - vector.x, y - vector.y };
 	}
 
 
-	double operator-( double const i ) const
+	double operator-( double i ) const
 	{
 		return length() - i;
 	}
@@ -146,7 +151,7 @@ public:
 	}
 
 
-	double operator*( Vector vector ) const
+	double operator*( const Vector& vector ) const
 	{
 		return x * vector.x + y * vector.y;
 	}
@@ -171,6 +176,6 @@ public:
 	}
 
 
-	const double x;
-	const double y;
+	double x;
+	double y;
 };

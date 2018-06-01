@@ -11,282 +11,449 @@
 #include "Polygon.h"
 #include "Circle.h"
 
+
 namespace GeometryMath {
 	//
 	// Distance from Vector to ...
 	//
 
 	template <>
-	double distance( Vector& v1, Vector& v2 )
+	struct Container < Vector, Vector >
 	{
-		return std::sqrt( pow( v1.x - v2.x, 2 ) + pow( v1.y - v2.y, 2 ) );
-	}
-
-
-	template <>
-	double distance( Vector& v, Line& l )
-	{
-		double d = std::sqrt( l.a * l.a + l.b * l.b );
-		double d1 = std::abs( l.a * v.x + l.b * v.y + l.c );
-		return d1 / d;
-	}
-
-
-	template < int size >
-	double distance( Vector& v, Polygon < size >& p )
-	{
-		Line line = Line( p.vectors[ p.vectors.size() - 1 ], p.vectors[ 0 ] );
-		double distance = line.distance( v );
-
-		for ( int i = 0; i < p.vectors.size() - 1; ++i ) {
-
-			line = Line( p.vectors[ i ], p.vectors[ i + 1 ] );
-
-			double d = line.distance( v );
-
-			if ( d < distance ) {
-				distance = d;
-			}
+		static double distance( const Vector& v1, const Vector& v2 )
+		{
+			return std::sqrt( pow( v1.x - v2.x, 2 ) + pow( v1.y - v2.y, 2 ) );
 		}
+	};
 
-		return distance;
-	}
+	template <>
+	struct Container < Vector, Line >
+	{
+		static double distance( const Vector& v, const Line& l )
+		{
+			double d = std::sqrt( l.a * l.a + l.b * l.b );
+			double d1 = std::abs( l.a * v.x + l.b * v.y + l.c );
+			return d1 / d;
+		}
+	};
+
+	template < std::size_t size >
+	struct Container < Vector, Polygon < size>>
+	{
+		static double distance( const Vector& v, const Polygon < size >& p )
+		{
+			Line line = Line( p.vectors[ p.vectors.size() - 1 ], p.vectors[ 0 ] );
+			double distance = line.distance( v );
+
+			for ( int i = 0; i < p.vectors.size() - 1; ++i ) {
+
+				line = Line( p.vectors[ i ], p.vectors[ i + 1 ] );
+
+				double d = line.distance( v );
+
+				if ( d < distance ) {
+					distance = d;
+				}
+			}
+
+			return distance;
+		}
+	};
 
 
 	template <>
-	double distance( Vector& v, Circle& c )
+	struct Container < Vector, Circle >
 	{
-		auto d = ( v - c.center );
-		return d.length();
-	}
+		static double distance( const Vector& v, const Circle& c )
+		{
+			auto d = ( v - c.center );
+			return d.length();
+		}
+	};
 
 	//
 	// Distance from line to ...
 	//
 
 	template <>
-	double distance( Line& l, Vector& v )
+	struct Container < Line, Vector >
 	{
-		return distance( v, l );
-	}
+		static double distance( const Line& l, const Vector& v )
+		{
+			return GeometryMath::Container < Vector, Line >::distance( v, l );
+		}
+	};
 
 
 	template <>
-	double distance( Line& l1, Line& l2 )
+	struct Container < Line, Line >
 	{
-		throw std::invalid_argument( "Unimplemented" );
-	}
+		static double distance( const Line& l1, const Line& l2 )
+		{
+			throw std::invalid_argument( "Unimplemented" );
+		}
+	};
 
 
-	template < int size >
-	double distance( Line& l, Polygon < size >& p )
+	template < std::size_t size >
+	struct Container < Line, Polygon < size > >
 	{
-		throw std::invalid_argument( "Unimplemented" );
-	}
+		static double distance( const Line& l, const Polygon < size >& p )
+		{
+			throw std::invalid_argument( "Unimplemented" );
+		}
+	};
 
 
 	template <>
-	double distance( Line& l, Circle& c )
+	struct Container < Line, Circle >
 	{
-		return distance( l, c.center );
-	}
+		static double distance( const Line& l, const Circle& c )
+		{
+			return GeometryMath::Container < Line, Vector >::distance( l, c.center );
+		}
+	};
 
 
 	//
 	// Distance from polygon to ...
 	//
 
-	template < int size >
-	double distance( Polygon < size >& p, Vector& v )
+	template < std::size_t size >
+	struct Container < Polygon < size >, Vector >
 	{
-		Line line{ p.vectors[ p.vectors.size() - 1 ], p.vectors[ 0 ] };
-		double distance = line.distance( v );
+		static double distance( const Polygon < size >& p, const Vector& v )
+		{
+			Line line{ p.vectors[ p.vectors.size() - 1 ], p.vectors[ 0 ] };
+			double distance = line.distance( v );
 
-		for ( int i = 0; i < p.vectors.size() - 1; ++i ) {
+			for ( int i = 0; i < p.vectors.size() - 1; ++i ) {
 
-			line = Line( p.vectors[ i ], p.vectors[ i + 1 ] );
+				line = Line( p.vectors[ i ], p.vectors[ i + 1 ] );
 
-			double d = line.distance( v );
+				double d = line.distance( v );
 
 //			if ( d < distance ) {
 //				distance = d;
 //			}
-			distance = std::min( d, distance );
+				distance = std::min( d, distance );
+			}
+
+			return distance;
 		}
 
-		return distance;
-	}
+
+		static bool contains( const Polygon < size >& p, const Vector& v )
+		{
+			int count = 0;
+
+			Vector rayEnd( p.maxX + 1, v.y );
+
+			Line ray{ v, rayEnd };
+
+			Line line{ p.vectors[ p.vectors.size() - 1 ], p.vectors[ 0 ] };
+			count += line.intersect( ray );
+
+			for ( int i = 0; i < p.vectors.size() - 1; ++i ) {
+
+				line = Line{ p.vectors[ i ], p.vectors[ i + 1 ] };
+				count += line.intersect( ray );
+			}
+
+			return count % 2 != 0;
+		}
+	};
 
 
-	template < int size >
-	double distance( Polygon < size >& p, Line& l )
+	template < std::size_t size >
+	struct Container < Polygon < size >, Line >
 	{
-		throw std::invalid_argument( "Unimplemented" );
-	}
+		static double distance( const Polygon < size >& p, const Line& l )
+		{
+			throw std::invalid_argument( "Unimplemented" );
+		}
 
 
-	template < int size1, int size2 >
-	double distance( Polygon < size1 >& p1, Polygon < size2 >& p2 )
+		static bool contains( const Polygon < size >& p, const Line& l )
+		{
+			typedef GeometryMath::Container < Polygon < size >, Vector > spocification;
+			return !l.infinite && spocification::contains( p, l.from ) && spocification::contains( p, l.to );
+		}
+	};
+
+
+	template < std::size_t size1, std::size_t size2 >
+	struct Container < Polygon < size1 >, Polygon < size2 > >
 	{
-		throw std::invalid_argument( "Unimplemented" );
-	}
+		static double distance( const Polygon < size1 >& p1, const Polygon < size2 >& p2 )
+		{
+			throw std::invalid_argument( "Unimplemented" );
+		}
 
 
-	template < int size >
-	double distance( Polygon < size >& p, Circle& c )
+		static bool contains( const Polygon < size1 >& p1, const Polygon < size2 >& p2 )
+		{
+			for ( Vector v: p2.vectors ) {
+				if ( !GeometryMath::Container < Polygon < size1 >, Vector >::contains( p1, v ) ) {
+					return false;
+				}
+			}
+
+			return true;
+		}
+	};
+
+
+	template < std::size_t size >
+	struct Container < Polygon < size >, Circle >
 	{
-		return distance( p, c.center );
-	}
+		static double distance( const Polygon < size >& p, const Circle& c )
+		{
+			return GeometryMath::Container < Polygon < size >, Vector >::distance( p, c.center );
+		}
+
+
+		static bool contains( const Polygon < size >& p, const Circle& c )
+		{
+			int count = 0;
+			Line l{ p.vectors[ p.vectors.size() - 1 ], p.vectors[ 0 ] };
+			count += c.intersect( l );
+
+			for ( int i = 0; i < p.vectors.size() - 1; ++i ) {
+
+				l = Line{ p.vectors[ i ], p.vectors[ i + 1 ] };
+
+				count += c.intersect( l );
+			}
+
+			return count == 0 && GeometryMath::Container < Polygon < size >, Vector >::contains( p, c.center );
+		}
+	};
 
 	//
 	// Distance from circle to ...
 	//
 
 	template <>
-	double distance( Circle& c1, Circle& c2 )
+	struct Container < Circle, Circle >
 	{
-		return distance( c1.center, c1.center );
-	}
-
-
-	template <>
-	double distance( Circle& c, Line& l )
-	{
-		auto v = l.nearestVector( c.center );
-		return distance( v, c );
-	}
-
-
-	template < int size >
-	double distance( Circle& c, Polygon < size >& p )
-	{
-		return distance( p, c );
-	}
-
-
-	template <>
-	double distance( Circle& c, Vector& v )
-	{
-		return distance( v, c );
-	}
-
-
-	//
-	// Polygon contains ...
-	//
-
-
-	template < int size >
-	bool contains( Polygon < size >& p, Vector& v )
-	{
-
-//		double x = v.x;
-//		double y = v.y;
-
-		int count = 0;
-
-		Vector rayEnd( p.maxX + 1, v.y );
-
-		Line ray{ v, rayEnd };
-
-		Line line{ p.vectors[ p.vectors.size() - 1 ], p.vectors[ 0 ] };
-		count += line.intersect( ray );
-
-		for ( int i = 0; i < p.vectors.size() - 1; ++i ) {
-
-			line = Line{ p.vectors[ i ], p.vectors[ i + 1 ] };
-			count += line.intersect( ray );
+		static double distance( const Circle& c1, const Circle& c2 )
+		{
+			return GeometryMath::Container < Vector, Vector >::distance( c1.center, c1.center );
 		}
 
-		return count % 2 != 0;
-	}
+		static bool contains( const Circle& p1, const Circle& p2 )
+		{
+			return distance( p1, p2 ) + p2.radius < p1.radius;
+		}
+	};
 
 
-	template < int size >
-	bool contains( Polygon < size >& p, Line& l )
+	template <>
+	struct Container < Circle, Vector >
 	{
-		return !l.infinite && contains( p, l.from ) && contains( p, l.to );
-	}
+		static double distance( const Circle& c, const Vector& v )
+		{
+			return GeometryMath::Container < Vector, Vector >::distance( c.center, v );
+		}
 
 
-	template < int size1, int size2 >
-	bool contains( Polygon < size1 >& p1, Polygon < size2 >& p2 )
+		static bool contains( const Circle& c, const Vector& v )
+		{
+
+			return distance( c, v ) <= c.radius;
+		}
+	};
+
+
+	template <>
+	struct Container < Circle, Line >
 	{
-		for ( Vector v: p2.vectors ) {
-			if ( !contains( p1, v ) ) {
-				return false;
+		static double distance( const Circle& c, const Line& l )
+		{
+			auto v = l.nearestVector( c.center );
+			return GeometryMath::Container < Vector, Circle >::distance( v, c );
+		}
+
+
+		static bool contains( const Circle& c, const Line& l )
+		{
+			typedef GeometryMath::Container < Circle, Vector > specification;
+			return !l.infinite && specification::contains( c, l.from ) && specification::contains( c, l.to );
+		}
+	};
+
+	template < std::size_t size >
+	struct Container < Circle, Polygon < size >>
+	{
+		static double distance( const Circle& c, const Polygon < size >& p )
+		{
+			return GeometryMath::Container < Polygon < size >, Circle >::distance( p, c );
+		}
+
+		static bool contains( const Circle& c, const Polygon < size >& p )
+		{
+			int count = 0;
+			Line l{ p.vectors[ p.vectors.size() - 1 ], p.vectors[ 0 ] };
+			count += c.intersect( l );
+
+			for ( int i = 0; i < p.vectors.size() - 1; ++i ) {
+
+				l = Line{ p.vectors[ i ], p.vectors[ i + 1 ] };
+
+				count += c.intersect( l );
 			}
+
+			for ( auto vec : p.vectors ) {
+				count += !c.intersect( l );
+			}
+
+			return count == 0;
 		}
-
-		return true;
-
-	}
+	};
 
 
-	template < int size >
-	bool contains( Polygon < size >& p, Circle& c )
+
+
+//
+// Polygon contains ...
+//
+
+
+	/*template < std::size_t size >
+	struct Container < Polygon < size >, Vector >
 	{
-		int count = 0;
-		Line l{ p.vectors[ p.vectors.size() - 1 ], p.vectors[ 0 ] };
-		count += c.intersect( l );
+		static bool contains( Polygon < size >& p, Vector& v )
+		{
+			int count = 0;
 
-		for ( int i = 0; i < p.vectors.size() - 1; ++i ) {
+			Vector rayEnd( p.maxX + 1, v.y );
 
-			l = Line{ p.vectors[ i ], p.vectors[ i + 1 ] };
+			Line ray{ v, rayEnd };
 
+			Line line{ p.vectors[ p.vectors.size() - 1 ], p.vectors[ 0 ] };
+			count += line.intersect( ray );
+
+			for ( int i = 0; i < p.vectors.size() - 1; ++i ) {
+
+				line = Line{ p.vectors[ i ], p.vectors[ i + 1 ] };
+				count += line.intersect( ray );
+			}
+
+			return count % 2 != 0;
+		}
+	};*/
+
+
+	/*template < std::size_t size >
+	struct Container < Polygon < size >, Line >
+	{
+		static bool contains( const Polygon < size >& p, const Line& l )
+		{
+			using GeometryMath::Container::contains;
+			return !l.infinite && contains( p, l.from ) && contains( p, l.to );
+		}
+	};*/
+
+
+	/*template < std::size_t size1, std::size_t size2 >
+	struct Container < Polygon < size1 >, Polygon < size2 > >
+	{
+		static bool contains( const Polygon < size1 >& p1, const Polygon < size2 >& p2 )
+		{
+			for ( Vector v: p2.vectors ) {
+				if ( !GeometryMath::Container::contains( p1, v ) ) {
+					return false;
+				}
+			}
+
+			return true;
+		}
+	};*/
+
+
+	/*template < std::size_t size >
+	struct Container < Polygon < size >, Circle >
+	{
+		static bool contains( const Polygon < size >& p, const Circle& c )
+		{
+			int count = 0;
+			Line l{ p.vectors[ p.vectors.size() - 1 ], p.vectors[ 0 ] };
 			count += c.intersect( l );
+
+			for ( int i = 0; i < p.vectors.size() - 1; ++i ) {
+
+				l = Line{ p.vectors[ i ], p.vectors[ i + 1 ] };
+
+				count += c.intersect( l );
+			}
+
+			return count == 0 && contains( p, c.center );
 		}
+	};*/
 
-		return count == 0 && contains( p, c.center );
-	}
-
-	//
-	// Circle contains ...
-	//
+//
+// Circle contains ...
+//
 
 
+	/*template <>
+	struct Container < Circle, Vector >
+	{
+		static bool contains( const Circle& c, const Vector& v )
+		{
+
+			return distance( c, v ) <= c.radius;
+		}
+	};*/
+
+
+/*
 	template <>
-	bool contains( Circle& c, Vector& v )
+	struct Container < Circle, Line >
 	{
+		static bool contains( const Circle& c, const Line& l )
+		{
+			using GeometryMath::Container::contains;
+			return !l.infinite && contains( c, l.from ) && contains( c, l.to );
+		}
+	};
+*/
 
-		return distance( c, v ) <= c.radius;
-	}
 
-
-	template <>
-	bool contains( Circle& c, Line& l )
+	/*template <>
+	struct Container < Circle, Circle >
 	{
-		return !l.infinite && contains( c, l.from ) && contains( c, l.to );
-	}
+		static bool contains( Circle& p1, Circle& p2 )
+		{
+			return distance( p1, p2 ) + p2.radius < p1.radius;
+		}
+	};*/
 
 
-	template <>
-	bool contains( Circle& p1, Circle& p2 )
+	/*template < std::size_t size >
+	struct Container < Circle, Polygon < size > >
 	{
-		return distance( p1, p2 ) + p2.radius < p1.radius;
-	}
-
-
-	template < int size >
-	bool contains( Circle& c, Polygon < size >& p )
-	{
-		int count = 0;
-		Line l{ p.vectors[ p.vectors.size() - 1 ], p.vectors[ 0 ] };
-		count += c.intersect( l );
-
-		for ( int i = 0; i < p.vectors.size() - 1; ++i ) {
-
-			l = Line{ p.vectors[ i ], p.vectors[ i + 1 ] };
-
+		bool contains( Circle& c, Polygon < size >& p )
+		{
+			int count = 0;
+			Line l{ p.vectors[ p.vectors.size() - 1 ], p.vectors[ 0 ] };
 			count += c.intersect( l );
-		}
 
-		for ( auto vec : p.vectors ) {
-			count += !c.intersect( l );
-		}
+			for ( int i = 0; i < p.vectors.size() - 1; ++i ) {
 
-		return count == 0;
-	}
+				l = Line{ p.vectors[ i ], p.vectors[ i + 1 ] };
+
+				count += c.intersect( l );
+			}
+
+			for ( auto vec : p.vectors ) {
+				count += !c.intersect( l );
+			}
+
+			return count == 0;
+		}
+	};*/
 
 
 };

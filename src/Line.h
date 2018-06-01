@@ -10,15 +10,15 @@
 #include "Vector.h"
 
 
-class Line : public Drawable, GeometryMath::DistanceTrait
+class Line : public Drawable, public GeometryMath::DistanceTrait < Line >
 {
 public:
 	Line( const Vector& _from, const Vector& _to, bool _infinite = false ) : from( _from ),
-	                                                             to( _to ),
-	                                                             a( _from.y - _to.y ),
-	                                                             b( _to.x - _from.x ),
-	                                                             c( -b * _from.y + -a * _from.x ),
-	                                                             infinite( _infinite ) { };
+	                                                                         to( _to ),
+	                                                                         a( _from.y - _to.y ),
+	                                                                         b( _to.x - _from.x ),
+	                                                                         c( -b * _from.y + -a * _from.x ),
+	                                                                         infinite( _infinite ) { };
 
 
 	Vector direction( ) const
@@ -47,7 +47,7 @@ public:
 	}
 
 
-	bool intersect( const Line& line ) const
+	bool intersect( Line& line )
 	{
 		Orientation o1 = orientation( line.from );
 		Orientation o2 = orientation( line.to );
@@ -77,10 +77,11 @@ public:
 	}
 
 
-	Vector intersection( const Line& line )
+	Vector intersection( Line& line )
 	{
 		//TODO: Line line is infinite?
-		if ( ( ( !infinite && !intersect( line ) ) && ( !line.infinite && !line.intersect( Line{ from, to } ) ) ) ||
+		auto line1 = Line{ from, to };
+		if ( ( ( !infinite && !intersect( line ) ) && ( !line.infinite && !line.intersect( line1 ) ) ) ||
 		     isParaller( line ) ) {
 			//TODO: Exception
 			throw std::invalid_argument( "Lines do not intersect" );
@@ -93,7 +94,7 @@ public:
 	}
 
 
-	Vector nearestVector( const Vector& vector )
+	Vector nearestVector( const Vector& vector ) const
 	{
 		return infinite ? nearestVectorOnLine( vector ) : nearestVectorOnLineSegment( vector );
 	}
@@ -111,7 +112,7 @@ public:
 	}
 
 
-	bool onSegment( const Vector& v ) const
+	bool onSegment( const Vector& v )
 	{
 		//TODO: Near float
 		return segmentDistance( v ) < PRECISION;
@@ -124,10 +125,10 @@ public:
 	}
 
 
-	double segmentDistance( const Vector& vector ) const
+	double segmentDistance( const Vector& vector )
 	{
-		const Vector segment = nearestVectorOnLineSegment( vector );
-		Vector diff = vector - segment;
+		Vector segment{ nearestVectorOnLineSegment( vector ) };
+		Vector diff{ vector - segment };
 		return diff.length();
 	}
 
@@ -172,7 +173,7 @@ private:
 	}
 
 
-	Vector nearestVectorOnLine( const Vector& vector )
+	Vector nearestVectorOnLine( const Vector& vector ) const
 	{
 		double x = ( -a * b * vector.y + b * b * vector.x - a * c ) / ( b * b + a * a );
 		double y = ( a * a * vector.y - a * b * vector.x - b * c ) / ( b * b + a * a );
@@ -181,7 +182,7 @@ private:
 	}
 
 
-	Vector nearestVectorOnLineSegment( const Vector& vector )
+	Vector nearestVectorOnLineSegment( const Vector& vector ) const
 	{
 		Vector nearest = nearestVectorOnLine( vector );
 

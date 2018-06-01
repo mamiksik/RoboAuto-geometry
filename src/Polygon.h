@@ -10,8 +10,8 @@
 #include "Vector.h"
 #include "Line.h"
 
-template < int size >
-class Polygon : public Drawable, GeometryMath::DistanceTrait, GeometryMath::ContainsTrait
+template < std::size_t size >
+class Polygon : public Drawable, public GeometryMath::DistanceTrait<Polygon<size>>, public GeometryMath::ContainsTrait<Polygon<size>>
 {
 public:
 	Polygon( std::array < Vector, size >& _points ) : vectors{ _points }, maxX( _points[ 0 ].x )
@@ -22,8 +22,8 @@ public:
 	}
 
 
-	template < int newSize = size + 1 >
-	Polygon < newSize > addVector( const Vector& v, int index = size )
+	template < std::size_t newSize = size + 1 >
+	Polygon < newSize > addVector( const Vector& v, std::size_t index = size )
 	{
 		std::array < Vector, newSize > newVectors;
 
@@ -75,6 +75,7 @@ public:
 		std::array < Vector, size > rotatedPoints = vectors;
 		for ( int i = 0; i < vectors.size(); ++i ) {
 			rotatedPoints[ i ] = vectors[ i ].rotate( angle, vector );
+//			rotatedPoints[ i ] = vectors[ i ].rotate( angle, vector );
 		}
 
 		return Polygon < size >( rotatedPoints );
